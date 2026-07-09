@@ -1,122 +1,122 @@
 {
-  "2026-07-03": {
-    "word": "BRAID",
-    "num": 1840
-  },
   "2026-07-04": {
-    "word": "DWARF",
+    "word": "PROXY",
     "num": 1841
   },
   "2026-07-05": {
-    "word": "CLIMB",
+    "word": "GLYPH",
     "num": 1842
   },
   "2026-07-06": {
-    "word": "BLIMP",
+    "word": "FLUTE",
     "num": 1843
   },
   "2026-07-07": {
-    "word": "JUMBO",
+    "word": "FAINT",
     "num": 1844
   },
   "2026-07-08": {
-    "word": "HAZEL",
+    "word": "GECKO",
     "num": 1845
   },
   "2026-07-09": {
-    "word": "AMEND",
+    "word": "BRAID",
     "num": 1846
   },
   "2026-07-10": {
-    "word": "FAINT",
+    "word": "AMEND",
     "num": 1847
   },
   "2026-07-11": {
-    "word": "CHIEF",
+    "word": "ZILCH",
     "num": 1848
   },
   "2026-07-12": {
-    "word": "SWILL",
+    "word": "CLIMB",
     "num": 1849
   },
   "2026-07-13": {
-    "word": "POPPY",
+    "word": "BATON",
     "num": 1850
   },
   "2026-07-14": {
-    "word": "VIXEN",
+    "word": "CRISP",
     "num": 1851
   },
   "2026-07-15": {
-    "word": "FLUTE",
+    "word": "FJORD",
     "num": 1852
   },
   "2026-07-16": {
-    "word": "RHINO",
+    "word": "SQUAT",
     "num": 1853
   },
   "2026-07-17": {
-    "word": "WALTZ",
+    "word": "POPPY",
     "num": 1854
   },
   "2026-07-18": {
-    "word": "GLYPH",
+    "word": "PIZZA",
     "num": 1855
   },
   "2026-07-19": {
-    "word": "QUIRK",
+    "word": "CHOMP",
     "num": 1856
   },
   "2026-07-20": {
-    "word": "SNARE",
+    "word": "HAZEL",
     "num": 1857
   },
   "2026-07-21": {
-    "word": "PIZZA",
+    "word": "RHINO",
     "num": 1858
   },
   "2026-07-22": {
-    "word": "SPELT",
+    "word": "DWARF",
     "num": 1859
   },
   "2026-07-23": {
-    "word": "PLUMB",
+    "word": "BLIMP",
     "num": 1860
   },
   "2026-07-24": {
-    "word": "PROXY",
+    "word": "SPELT",
     "num": 1861
   },
   "2026-07-25": {
-    "word": "CRISP",
+    "word": "PLUMB",
     "num": 1862
   },
   "2026-07-26": {
-    "word": "CHOMP",
+    "word": "WALTZ",
     "num": 1863
   },
   "2026-07-27": {
-    "word": "GRAZE",
+    "word": "QUIRK",
     "num": 1864
   },
   "2026-07-28": {
-    "word": "FJORD",
+    "word": "SHIRK",
     "num": 1865
   },
   "2026-07-29": {
-    "word": "GECKO",
+    "word": "GRAZE",
     "num": 1866
   },
   "2026-07-30": {
-    "word": "ZILCH",
+    "word": "JUMBO",
     "num": 1867
   },
   "2026-07-31": {
-    "word": "SHIRK",
+    "word": "STOMP",
     "num": 1868
   },
   "2026-08-01": {
-    "word": "BATON",
+    "word": "LIGHT",
     "num": 1869
+  },
+  "2026-08-02": {
+    "word": "SWILL",
+    "num": 1870
   }
 }
