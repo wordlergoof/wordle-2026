@@ -22,7 +22,7 @@ game_yesterday_num = game_today_num - 1
 game_tomorrow_num = game_today_num + 1
 
 # 3. Fetch the definitive list from your open community data URL
-COMMUNITY_DATA_URL = "https://raw.githubusercontent.com/Kinkajou/wordle-open-dev/main/words.txt"
+COMMUNITY_DATA_URL = "https://raw.githubusercontent.com/cfreshman/wordle-answers-alphabetical/master/wordle-answers-alphabetical.txt"
 
 try:
     # Create an unverified context to bypass the Mac local issuer certificate error
