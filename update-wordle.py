@@ -41,18 +41,18 @@ except Exception as e:
     word_today = "CANAL"
     word_tomorrow = "PIZZA"
 
-# 4. Construct the strict, clean 3-word sliding window matching your local keys
+# 4. Construct the strict, clean 3-word sliding window matching your HTML keys exactly
 three_day_matrix = {
     date_yesterday: {
-        "game_number": game_yesterday_num,
+        "num": game_yesterday_num,
         "word": word_yesterday
     },
     date_today: {
-        "game_number": game_today_num,
+        "num": game_today_num,
         "word": word_today
     },
     date_tomorrow: {
-        "game_number": game_tomorrow_num,
+        "num": game_tomorrow_num,
         "word": word_tomorrow
     }
 }
