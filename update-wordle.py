@@ -1,8 +1,9 @@
 import json
 import urllib.request
+import ssl
 from datetime import datetime, timedelta
 
-# 1. Calculate yesterday's, today's, and tomorrow's dates based on your Mac's current time
+# 1. Calculate yesterday's, today's, and tomorrow's dates
 today_dt = datetime.now()
 yesterday_dt = today_dt - timedelta(days=1)
 tomorrow_dt = today_dt + timedelta(days=1)
@@ -12,11 +13,10 @@ date_today = today_dt.strftime("%Y-%m-%d")
 date_tomorrow = tomorrow_dt.strftime("%Y-%m-%d")
 
 # 2. Define our anchor points 
-# Game 1846 is on July 9, 2026
 ANCHOR_DATE = datetime(2026, 7, 9)
 ANCHOR_GAME_NUM = 1846
 
-# Calculate the exact game numbers for yesterday, today, and tomorrow
+# Calculate the exact game numbers
 game_today_num = ANCHOR_GAME_NUM + (today_dt - ANCHOR_DATE).days
 game_yesterday_num = game_today_num - 1
 game_tomorrow_num = game_today_num + 1
@@ -25,8 +25,10 @@ game_tomorrow_num = game_today_num + 1
 COMMUNITY_DATA_URL = "https://raw.githubusercontent.com/Kinkajou/wordle-open-dev/main/words.txt"
 
 try:
-    with urllib.request.urlopen(COMMUNITY_DATA_URL) as response:
-        # Assuming the file is a clean list of words, one per line
+    # Create an unverified context to bypass the Mac local issuer certificate error
+    context = ssl._create_unverified_context()
+    
+    with urllib.request.urlopen(COMMUNITY_DATA_URL, context=context) as response:
         all_words = [line.decode('utf-8').strip().upper() for line in response.readlines() if line.strip()]
     
     # Extract the exact words using the game numbers as index positions
@@ -36,7 +38,7 @@ try:
 
 except Exception as e:
     print(f"Error fetching community data: {e}")
-    # Safety fallbacks if the internet fetch fails
+    # Safety fallbacks if the internet fetch fails entirely
     word_yesterday = "AMEND"
     word_today = "CANAL"
     word_tomorrow = "PIZZA"
