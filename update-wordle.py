@@ -22,7 +22,7 @@ game_yesterday_num = game_today_num - 1
 game_tomorrow_num = game_today_num + 1
 
 # 3. Fetch the definitive list from your open community data URL
-COMMUNITY_DATA_URL = "https://raw.githubusercontent.com/username/repo/main/community-words.txt"
+COMMUNITY_DATA_URL = "https://raw.githubusercontent.com/Kinkajou/wordle-open-dev/main/words.txt"
 
 try:
     with urllib.request.urlopen(COMMUNITY_DATA_URL) as response:
