@@ -1,118 +1,57 @@
-import os
 import json
-import random
 import urllib.request
-import datetime
-import webbrowser
+from datetime import datetime, timedelta
 
-# ---- CONFIGURATION ----
-BASE_DIR = "/Users/ramsundaram/Desktop/Desktop - Ram’s MacBook Air/WORDLE-LOCAL"
-WORDS_FILE = os.path.join(BASE_DIR, "words.json")
-LAUNCHER_FILE = os.path.join(BASE_DIR, "play.html")
-GAME_FILE = os.path.join(BASE_DIR, "index.html")
+# 1. Calculate today's and tomorrow's dates based on your Mac's current time
+today_dt = datetime.now()
+tomorrow_dt = today_dt + timedelta(days=1)
 
-# Get tomorrow's date format (YYYY-MM-DD)
-tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-date_key = tomorrow.strftime("%Y-%m-%d")
+date_today = today_dt.strftime("%Y-%m-%d")
+date_tomorrow = tomorrow_dt.strftime("%Y-%m-%d")
 
-def fetch_live_reddit_answer():
-    """Fetches the real-world answer from an open community data file."""
-    try:
-        # A lightweight, open community file that requires no security bypasses
-        url = "https://raw.githubusercontent.com/tabatkins/wordle-list/main/words-guessable.txt"
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        
-        with urllib.request.urlopen(req, timeout=10) as response:
-            words = response.read().decode('utf-8').splitlines()
-            
-            # Real-world Wordle calendar index math
-            base_date = datetime.date(2021, 6, 19)
-            tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
-            target_index = (tomorrow_date - base_date).days % len(words)
-            
-            # The actual answer for tomorrow!
-            real_word = words[target_index].strip().upper()
-            
-            # FORCE OVERRIDE: Hardcoding the real upcoming answer for July 9th just in case!
-            if date_key == "2026-07-09":
-                return "AMEND", 1844
-                
-            if real_word:
-                return real_word, 1844
-    except Exception as e:
-        print(f"Data link fallback triggered: {e}")
+# 2. Define our anchor points (Update these to match your community file mapping if needed)
+# Example anchor: Game 1846 is on July 9, 2026
+ANCHOR_DATE = datetime(2026, 7, 9)
+ANCHOR_GAME_NUM = 1846
+
+# Calculate the exact game numbers for today and tomorrow
+game_today_num = ANCHOR_GAME_NUM + (today_dt - ANCHOR_DATE).days
+game_tomorrow_num = game_today_num + 1
+
+# 3. Fetch the definitive list from your open community data URL
+# (Replace this URL with your actual community data source link)
+COMMUNITY_DATA_URL = "https://raw.githubusercontent.com/username/repo/main/community-words.txt"
+
+try:
+    with urllib.request.urlopen(COMMUNITY_DATA_URL) as response:
+        # Assuming the file is a clean list of words, one per line
+        all_words = [line.decode('utf-8').strip().upper() for line in response.readlines() if line.strip()]
     
-    # Emergency word ONLY if internet is completely disconnected
-    return "AMEND", 1844
+    # Extract the exact words using the game numbers as index positions
+    # (Adjust the index math if your community file starts at a different game number)
+    word_today = all_words[game_today_num % len(all_words)]
+    word_tomorrow = all_words[game_tomorrow_num % len(all_words)]
 
-# 1. Pull the answer programmatically
-target_word, game_num = fetch_live_reddit_answer()
+except Exception as e:
+    print(f"Error fetching community data: {e}")
+    # Safety fallbacks if the internet fetch fails, keeping your game playable
+    word_today = "AMEND"
+    word_tomorrow = "CANAL"
 
-# 2. Build out a standard 30-word vocabulary block (WITHOUT the target word to avoid duplicates)
-vocabulary = [
-    "FLUTE", "CRISP", "GECKO", "PLUMB", "VIXEN", "JUMBO", "CHIEF", "BRAID", 
-    "SHIRK", "ZILCH", "QUIRK", "POPPY", "RHINO", "SPELT", "WALTZ", "FJORD", 
-    "BLIMP", "GRAZE", "GLYPH", "SQUAT", "PROXY", "HAZEL", "DWARF", "CHOMP",
-    "STOMP", "CLIMB", "LIGHT", "FAINT", "PIZZA", "SWILL", "SNARE", "BATON"
-]
+# 4. Construct the strict, clean 2-word sliding window
+simplified_matrix = {
+    date_today: {
+        "word": word_today,
+        "num": game_today_num
+    },
+    date_tomorrow: {
+        "word": word_tomorrow,
+        "num": game_tomorrow_num
+    }
+}
 
-# Clean up any potential duplicates before shuffling
-if target_word in vocabulary:
-    vocabulary.remove(target_word)
-random.shuffle(vocabulary)
+# 5. Overwrite the local words.json file with only these 2 entries
+with open("words.json", "w") as f:
+    json.dump(simplified_matrix, f, indent=2)
 
-# 3. Restructure and sync the scrambled map
-word_dict = {}
-current_date = datetime.date.today()
-
-# Our permanent real-world anchor point
-anchor_date = datetime.date(2026, 7, 7)
-anchor_game_num = 1844
-
-for i, word in enumerate(vocabulary[:30]):
-    loop_date = current_date + datetime.timedelta(days=(i - 5))
-    loop_str = loop_date.strftime("%Y-%m-%d")
-    
-    # AUTOMATIC MATH: Flawlessly calculates the true game number
-    days_difference = (loop_date - anchor_date).days
-    exact_game_num = anchor_game_num + days_difference
-    
-    if loop_str == date_key:
-        word_dict[loop_str] = {"word": target_word, "num": exact_game_num} 
-    else:
-        word_dict[loop_str] = {"word": word, "num": exact_game_num}
-
-# 4. Save locally
-with open(WORDS_FILE, "w") as f:
-    json.dump(word_dict, f, indent=2)
-
-# 5. Build Launcher Screen
-launcher_html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <title>Wordle Local Controller</title>
-    <style>
-        body {{ font-family: -apple-system, sans-serif; text-align: center; background: #121213; color: white; padding-top: 50px; }}
-        .card {{ background: #1a1a1b; border: 1px solid #3a3a3c; border-radius: 8px; padding: 30px; display: inline-block; box-shadow: 0 4px 23px rgba(0,0,0,0.5); }}
-        h1 {{ margin-top: 0; color: #538d4e; }}
-        .status {{ color: #818384; margin-bottom: 25px; }}
-        .btn {{ background: #538d4e; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }}
-        .btn:hover {{ background: #609e5b; }}
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1>Wordle Controller</h1>
-        <p class="status">Local files synchronized from early time zone streams.</p>
-        <a href="{GAME_FILE}" class="btn" target="_blank">Launch Game Dashboard</a>
-    </div>
-</body>
-</html>
-"""
-
-with open(LAUNCHER_FILE, "w") as f:
-    f.write(launcher_html)
-
-# 6. Auto-boot control dashboard
-webbrowser.open("file://" + os.path.realpath(LAUNCHER_FILE))
-print("Process completed successfully.")
+print(f"Successfully synchronized words.json for {date_today} and {date_tomorrow}!")
