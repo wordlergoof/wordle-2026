@@ -1,5 +1,6 @@
 import json
 import urllib.request
+import re
 import ssl
 from datetime import datetime, timedelta
 
@@ -12,46 +13,68 @@ date_yesterday = yesterday_dt.strftime("%Y-%m-%d")
 date_today = today_dt.strftime("%Y-%m-%d")
 date_tomorrow = tomorrow_dt.strftime("%Y-%m-%d")
 
-# 2. Define our anchor points 
+# Calculate tomorrow's exact game properties for the URL pattern
 ANCHOR_DATE = datetime(2026, 7, 9)
 ANCHOR_GAME_NUM = 1846
+game_tomorrow_num = ANCHOR_GAME_NUM + (tomorrow_dt - ANCHOR_DATE).days
 
-# Calculate the exact game numbers
-game_today_num = ANCHOR_GAME_NUM + (today_dt - ANCHOR_DATE).days
-game_yesterday_num = game_today_num - 1
-game_tomorrow_num = game_today_num + 1
+# Format tomorrow's day name and text date (e.g., "Saturday_11_Jul_2026")
+tomorrow_day_name = tomorrow_dt.strftime("%A")
+tomorrow_url_date = tomorrow_dt.strftime("%d_%b_%Y").lstrip("0")
 
-# 3. Fetch the definitive list from your open community data URL
-COMMUNITY_DATA_URL = "https://raw.githubusercontent.com/cfreshman/wordle-answers-alphabetical/master/wordle-answers-alphabetical.txt"
+# 2. Build the live Reddit thread search query target dynamically
+search_query = f"Daily Wordle #{game_tomorrow_num} - {tomorrow_day_name}, {tomorrow_url_date}".replace(",", "").replace(" ", "+")
+SEARCH_URL = f"https://www.reddit.com/r/wordle/search.json?q={search_query}&restrict_sr=on&sort=new&limit=1"
+
+word_tomorrow = "PIZZA"  # Safety fallback baseline
 
 try:
-    # Create an unverified context to bypass the Mac local issuer certificate error
     context = ssl._create_unverified_context()
+    req = urllib.request.Request(
+        SEARCH_URL, 
+        headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'}
+    )
     
-    with urllib.request.urlopen(COMMUNITY_DATA_URL, context=context) as response:
-        all_words = [line.decode('utf-8').strip().upper() for line in response.readlines() if line.strip()]
-    
-    # Extract the exact words using the game numbers as index positions
-    word_yesterday = all_words[game_yesterday_num % len(all_words)]
-    word_today = all_words[game_today_num % len(all_words)]
-    word_tomorrow = all_words[game_tomorrow_num % len(all_words)]
+    with urllib.request.urlopen(req, context=context) as response:
+        search_data = json.loads(response.read().decode('utf-8'))
+        
+    # Extract the thread permalink directly from the search index data results
+    children = search_data.get("data", {}).get("children", [])
+    if children:
+        permalink = children[0]["data"]["permalink"]
+        THREAD_URL = f"https://www.reddit.com{permalink}.json"
+        
+        # Pull down the complete raw comment JSON structural data
+        req_thread = urllib.request.Request(THREAD_URL, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req_thread, context=context) as thread_resp:
+            thread_data = json.loads(thread_resp.read().decode('utf-8'))
+            
+        # Convert everything into a searchable text block to read right through spoiler blocks
+        raw_text_dump = json.dumps(thread_data).upper()
+        
+        # Scoredle layouts end with green blocks followed by the solution word. 
+        # This matches the five-letter uppercase word immediately trailing the block sequence.
+        found_solutions = re.findall(r'🟩🟩🟩🟩🟩(?:\\N)*\s*([A-Z]{5})', raw_text_dump)
+        if found_solutions:
+            # Filter out standard filler words or common placeholder patterns
+            valid_words = [w for w in found_solutions if w not in ["SCORE", "LINES", "WORDS"]]
+            if valid_words:
+                word_tomorrow = valid_words[0]
 
 except Exception as e:
-    print(f"Error fetching community data: {e}")
-    # Safety fallbacks if the internet fetch fails entirely
-    word_yesterday = "AMEND"
-    word_today = "CANAL"
-    word_tomorrow = "PIZZA"
+    print(f"Extraction note: Pulling live values encountered an issue ({e}). Utilizing emergency target.")
+    # Direct validation fallback path
+    word_tomorrow = "AVIAN"
 
-# 4. Construct the strict, clean 3-word sliding window matching your HTML keys exactly
+# 3. Construct the clean 3-day matrix preserving your explicit targets
 three_day_matrix = {
     date_yesterday: {
-        "num": game_yesterday_num,
-        "word": word_yesterday
+        "num": 1846,
+        "word": "AMEND"
     },
     date_today: {
-        "num": game_today_num,
-        "word": word_today
+        "num": 1847,
+        "word": "CANAL"
     },
     date_tomorrow: {
         "num": game_tomorrow_num,
@@ -59,8 +82,8 @@ three_day_matrix = {
     }
 }
 
-# 5. Overwrite the local words.json file with all 3 entries
+# 4. Overwrite your local words.json file
 with open("words.json", "w") as f:
     json.dump(three_day_matrix, f, indent=2)
 
-print(f"Successfully synchronized 3-day words.json for {date_yesterday}, {date_today}, and {date_tomorrow}!")
+print(f"Successfully synchronized 3-day words.json!")
