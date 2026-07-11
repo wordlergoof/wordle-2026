@@ -1,11 +1,8 @@
 import json
-import urllib.request
-import urllib.parse
 import re
-import ssl
 from datetime import datetime, timedelta
 
-# 1. Calculate yesterday's, today's, and tomorrow's dates
+# 1. Calculate dates
 today_dt = datetime.now()
 yesterday_dt = today_dt - timedelta(days=1)
 tomorrow_dt = today_dt + timedelta(days=1)
@@ -30,47 +27,31 @@ except:
 
 word_tomorrow = existing_words.get(date_tomorrow, {}).get("word", "?????")
 
-# 2. Build cleanly encoded search query
-raw_query = f'title:"Daily Wordle #{game_tomorrow_num}"'
-encoded_query = urllib.parse.quote(raw_query)
-SEARCH_URL = f"https://www.reddit.com/r/wordle/search.json?q={encoded_query}&restrict_sr=on&sort=new&limit=1"
+print("[Check 1] Processing text file 'reddit_data.txt'...")
 
 try:
-    context = ssl._create_unverified_context()
-    req = urllib.request.Request(
-        SEARCH_URL, 
-        headers={'User-Agent': 'Macintosh:WordleEntropyHelper:v1.0 (by /u/WordleDeveloper)'}
-    )
+    with open("reddit_data.txt", "r", encoding="utf-8") as file:
+        raw_text_dump = file.read().upper()
     
-    with urllib.request.urlopen(req, context=context) as response:
-        search_data = json.loads(response.read().decode('utf-8'))
-        
-    children = search_data.get("data", {}).get("children", [])
-    if children:
-        permalink = children[0]["data"]["permalink"]
-        THREAD_URL = f"https://www.reddit.com{permalink}.json"
-        
-        req_thread = urllib.request.Request(
-            THREAD_URL, 
-            headers={'User-Agent': 'Macintosh:WordleEntropyHelper:v1.0 (by /u/WordleDeveloper)'}
-        )
-        with urllib.request.urlopen(req_thread, context=context) as thread_resp:
-            thread_data = json.loads(thread_resp.read().decode('utf-8'))
-            
-        raw_text_dump = json.dumps(thread_data).upper()
-        
-        # NEW STRATEGY: Look for standard spoiler tags >!WORD!< or escaped JSON variants \>!WORD!\<
-        # The parentheses () capture ONLY the 5-letter word inside, leaving the symbols behind.
-        found_solutions = re.findall(r'(?:>|\\>)\!([A-Z]{5})\!(?:<|\\<)', raw_text_dump)
-        
-        if found_solutions:
-            # Filter out common false-positive uppercase words
-            valid_words = [w for w in found_solutions if w not in ["SCORE", "LINES", "WORDS", "REPLY"]]
-            if valid_words:
-                word_tomorrow = valid_words[0]
+    print("[Check 2] File read successfully. Scanning for winning rows...")
+    
+    # Target 5-letter uppercase words that immediately follow 5 green square emojis
+    found_solutions = re.findall(r'🟩🟩🟩🟩🟩\s*([A-Z]{5})', raw_text_dump)
+    print(f"[Check 3] Scan complete. Found {len(found_solutions)} winning row charts.")
+    
+    if found_solutions:
+        # Filter out layout anomalies if any exist
+        valid_words = [w for w in found_solutions if w not in ["SCORE", "LINES", "WORDS"]]
+        print(f"[Check 4] Filter complete. {len(valid_words)} clean candidate answers remain.")
+        if valid_words:
+            # Target the very last winning chart to guarantee correctness
+            word_tomorrow = valid_words[-1]
+            print("🎉 Success: Tomorrow's word isolated successfully from text dump!")
 
+except FileNotFoundError:
+    print("⚠️ Checkpoint: 'reddit_data.txt' not found.")
 except Exception as e:
-    pass
+    print(f"❌ Error encountered: {e}")
 
 word_yesterday = existing_words.get(date_yesterday, {}).get("word", "AMEND")
 word_today = existing_words.get(date_today, {}).get("word", "CANAL")
