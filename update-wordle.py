@@ -27,26 +27,48 @@ except:
 
 word_tomorrow = existing_words.get(date_tomorrow, {}).get("word", "?????")
 
-print("[Check 1] Processing text file 'reddit_data.txt'...")
+print("[Check 1] Processing local text/source file 'reddit_data.txt'...")
 
 try:
     with open("reddit_data.txt", "r", encoding="utf-8") as file:
         raw_text_dump = file.read().upper()
     
-    print("[Check 2] File read successfully. Scanning for winning rows...")
+    print("[Check 2] File read successfully. Scanning for hidden word entries...")
     
-    # Target 5-letter uppercase words that immediately follow 5 green square emojis
-    found_solutions = re.findall(r'🟩🟩🟩🟩🟩\s*([A-Z]{5})', raw_text_dump)
-    print(f"[Check 3] Scan complete. Found {len(found_solutions)} winning row charts.")
+    found_solutions = []
+
+    # Strategy A: Clean text scanner (🟩🟩🟩🟩🟩 CLACK)
+    text_matches = re.findall(r'🟩🟩🟩🟩🟩\s*([A-Z]{5})', raw_text_dump)
+    found_solutions.extend(text_matches)
+    
+    # Strategy B: HTML source table scanner (Handles 🟩🟩🟩🟩🟩 and gaps in code)
+    html_table_matches = re.findall(r'🟩🟩🟩🟩🟩[^A-Z]{0,50}([A-Z]{5})', raw_text_dump)
+    found_solutions.extend(html_table_matches)
+
+    # Strategy C: Raw Reddit Markdown spoiler tags (>!WORD!< or JSON escaped versions)
+    spoiler_matches = re.findall(r'(?:>|\\>|&GT;)\!([A-Z]{5})\!(?:<|\\<|&LT;)', raw_text_dump)
+    found_solutions.extend(spoiler_matches)
+    
+    # Strategy D: HTML element spoiler tags
+    element_matches = re.findall(r'CLASS="MD-SPOILER-TEXT"[^>]*>([A-Z]{5})', raw_text_dump)
+    found_solutions.extend(element_matches)
+
+    print(f"[Check 3] Scan complete. Found {len(found_solutions)} total potential word patterns.")
     
     if found_solutions:
-        # Filter out layout anomalies if any exist
-        valid_words = [w for w in found_solutions if w not in ["SCORE", "LINES", "WORDS"]]
-        print(f"[Check 4] Filter complete. {len(valid_words)} clean candidate answers remain.")
+        # Filter out technical jargon and common layout words
+        banned_words = ["SCORE", "LINES", "WORDS", "REPLY", "SPOIL", "FALSE", "VERIF", "STOUT"]
+        valid_words = [w for w in found_solutions if w not in banned_words]
+        
+        print(f"[Check 4] Filter complete. {len(valid_words)} valid candidate answers remain.")
         if valid_words:
-            # Target the very last winning chart to guarantee correctness
+            # Latch onto the final parsed word
             word_tomorrow = valid_words[-1]
-            print("🎉 Success: Tomorrow's word isolated successfully from text dump!")
+            print(f"🎉 Success: Tomorrow's hidden word has been isolated!")
+        else:
+            print("⚠️ Checkpoint: All found patterns were filtered out as background noise.")
+    else:
+        print("⚠️ Checkpoint: No matching Wordle answer patterns found in the file text.")
 
 except FileNotFoundError:
     print("⚠️ Checkpoint: 'reddit_data.txt' not found.")
