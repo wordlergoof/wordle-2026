@@ -9,7 +9,25 @@
         body { background: #ffffff; color: #000000; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 5px; overflow-x: hidden; width: 100vw; -webkit-text-size-adjust: 100%; }
         header { font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #d3d6da; width: 100%; text-align: center; padding: 5px 0; margin-bottom: 5px; }
         #game-container { width: 100%; max-width: 375px; display: flex; flex-direction: column; align-items: center; }
-        .tile { width: 40px; height: 40px; border: 2px solid #d3d6da; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; font-weight: bold; margin: 2px; text-transform: uppercase; color: #000000; }
+        
+        /* Enhanced .tile to handle 3D perspective transformations smoothly */
+        .tile { 
+            width: 40px; 
+            height: 40px; 
+            border: 2px solid #d3d6da; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            margin: 2px; 
+            text-transform: uppercase; 
+            color: #000000;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            backface-visibility: list-item;
+        }
+        
         .row { display: flex; justify-content: center; width: 100%; }
         .kb-row { display: flex; justify-content: center; width: 100%; margin: 3px 0; padding: 0 2px; touch-action: manipulation; }
         .key { background: #d3d6da; color: #000000; flex: 1; min-width: 0; height: 55px; margin: 1.5px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; display: flex; justify-content: center; align-items: center; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -27,6 +45,17 @@
         input:checked + .slider:before { transform: translateX(16px); }
         #msg { height: 25px; font-weight: bold; color: #6aaa64; text-align: center; font-size: 0.8rem; margin-bottom: 5px; }
         #expired { display: none; text-align: center; margin-top: 50px; font-weight: bold; color: #787c7e; width: 100%; padding: 20px; }
+        
+        /* NYT Style Horizontal Flip Animation Class */
+        .flip {
+            animation: flipTile 0.55s ease-in-out forwards;
+        }
+
+        @keyframes flipTile {
+            0% { transform: rotateX(0deg); }
+            45% { transform: rotateX(90deg); } /* Flat edge-on point */
+            100% { transform: rotateX(0deg); }
+        }
     </style>
 </head>
 <body>
@@ -54,44 +83,35 @@
 </div>
 <div id="expired"><h1>Wordle</h1><p>You have already played today's game!</p></div>
 <script>
-// --- 1. Global Variables (Keep these outside so all functions can see them) ---
+// --- 1. Global Variables ---
 var r = 0, c = 0, g = "", done = false, win = false;
 var greens = [null,null,null,null,null];
 var yellows = [];
 var ems = [];
 const ords = ["1st", "2nd", "3rd", "4th", "5th"];
-var ans = "";      // Will be set by initGame()
-var todayData = {}; // Will be set by initGame()
-var dateKey = "";   // Will be set by initGame()
+var ans = "";      
+var todayData = {}; 
+var dateKey = "";   
 
 // --- 2. Asynchronous Initialization ---
 async function initGame() {
     try {
-        // Fetch the external JSON file with our cache-buster timestamp
         const response = await fetch('words.json?v=' + new Date().getTime());
         const wordList = await response.json();
 
-        // Calculate today's date key
         const dt = new Date();
-        
-        // FORCE THE GAME ONE DAY AHEAD TO PLAY JULY 5th (#1842) TODAY
-        // Removed one day ahead force
-
         dateKey = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
         
-        // Check if already played
         if (localStorage.getItem('wordle_played_date') === dateKey) {
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('expired').style.display = 'block';
             return;
         }
 
-        // Extract today's puzzle data from the scrambled dictionary
         todayData = wordList[dateKey] || { word: "SCALP", num: 1702 };
         ans = todayData.word;
         document.getElementById("puzNum").textContent = "WORDLE #" + todayData.num;
 
-        // --- Step 3 Integration: Load mid-game saved state if it exists ---
         const savedStateRaw = localStorage.getItem('wordle_current_state_' + dateKey);
         if (savedStateRaw) {
             const state = JSON.parse(savedStateRaw);
@@ -104,10 +124,8 @@ async function initGame() {
             yellows = state.yellows;
             ems = state.ems;
             
-            // Restore the visual board tiles and colors
             document.getElementById("board").innerHTML = state.boardHtml;
 
-            // Keep the share button visible if they already finished the game before refreshing
             if (done) {
                 document.getElementById("share").style.display = "block";
                 document.getElementById("msg").textContent = win ? "GENIUS!" : ans;
@@ -116,14 +134,11 @@ async function initGame() {
 
     } catch (error) {
         console.error("Error loading word list:", error);
-        // Fallback if the file fails to load
-        // Overridden hardcode removed
         ans = todayData.word;
         document.getElementById("puzNum").textContent = "WORDLE #" + todayData.num;
     }
 }
 
-// --- Step 1 Integration: Save State Function ---
 function saveGameState() {
     const state = {
         r: r,
@@ -139,7 +154,7 @@ function saveGameState() {
     localStorage.setItem('wordle_current_state_' + dateKey, JSON.stringify(state));
 }
 
-// --- 3. Original Game Logic Functions ---
+// --- 3. Game Logic Functions ---
 function pr(l) {
     if (done) return;
     if (l == "ENTER") {
@@ -155,7 +170,7 @@ function pr(l) {
         g += l;
         c++;
     }
-    saveGameState(); // <-- Step 2 Integration: Save after every key change
+    saveGameState(); 
 }
 
 function ch() {
@@ -179,39 +194,68 @@ function ch() {
     }
     var chk = ans.split("");
     var rowEm = ["⬛","⬛","⬛","⬛","⬛"];
+    
+    // Pass 1: Tag direct matches (Greens)
     for (var i = 0; i < 5; i++) {
         if (g[i] == ans[i]) {
-            rowTiles[i].setAttribute("data-s", "c");
             greens[i] = g[i];
             chk[i] = null;
             rowEm[i] = "🟩";
         }
     }
+    // Pass 2: Tag shifts (Yellows vs Grays)
     for (var i = 0; i < 5; i++) {
         if (rowEm[i] == "🟩") continue;
         var idx = chk.indexOf(g[i]);
         if (idx != -1) {
-            rowTiles[i].setAttribute("data-s", "p");
             if (yellows.indexOf(g[i]) == -1) yellows.push(g[i]);
             chk[idx] = null;
             rowEm[i] = "🟨";
         } else {
-            rowTiles[i].setAttribute("data-s", "a");
+            rowEm[i] = "⬛";
         }
     }
+
+    // Capture current row metrics into variables for asynchronous execution protection
+    var currentGuess = g;
+    var currentRow = r;
+
+    // Sequential cascade engine to step flip transitions 
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            rowTiles[i].classList.add("flip");
+
+            // Swap colors halfway through (250ms into animation)
+            setTimeout(() => {
+                if (rowEm[i] == "🟩") {
+                    rowTiles[i].setAttribute("data-s", "c");
+                } else if (rowEm[i] == "🟨") {
+                    rowTiles[i].setAttribute("data-s", "p");
+                } else {
+                    rowTiles[i].setAttribute("data-s", "a");
+                }
+            }, 250);
+
+        }, i * 200); // 200ms stagger offset between characters
+    }
+
     ems.push(rowEm.join(""));
     r++;
-    if (g == ans || r == 6) {
-        done = true;
-        win = (g == ans);
-        document.getElementById("share").style.display = "block";
-        document.getElementById("msg").textContent = win ? "GENIUS!" : ans;
-        localStorage.setItem('wordle_played_date', dateKey);
-    }
+    
+    // Hold final win/loss validation evaluations until row presentation completes
+    setTimeout(() => {
+        if (currentGuess == ans || currentRow == 5) {
+            done = true;
+            win = (currentGuess == ans);
+            document.getElementById("share").style.display = "block";
+            document.getElementById("msg").textContent = win ? "GENIUS!" : ans;
+            localStorage.setItem('wordle_played_date', dateKey);
+        }
+        saveGameState();
+    }, (4 * 200) + 550);
+
     c = 0;
     g = "";
-    
-    saveGameState(); // <-- Step 2 Integration: Save after a row evaluation settles
 }
 
 function showMsg(m) {
