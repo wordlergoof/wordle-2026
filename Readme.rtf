@@ -1,34 +1,82 @@
 {\rtf1\ansi\ansicpg1252\cocoartf2870
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fmodern\fcharset0 Courier;
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fmodern\fcharset0 Courier;
 \f3\froman\fcharset0 Times-Roman;}
-{\colortbl;\red255\green255\blue255;\red251\green2\blue7;\red251\green2\blue7;\red0\green0\blue0;
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red251\green2\blue7;\red0\green0\blue0;
 }
-{\*\expandedcolortbl;;\cssrgb\c100000\c14913\c0;\cssrgb\c100000\c14913\c0;\cssrgb\c0\c0\c0;
+{\*\expandedcolortbl;;\csgray\c0;\cssrgb\c100000\c14913\c0;\cssrgb\c0\c0\c0;
 }
 \margl1440\margr1440\vieww17280\viewh15320\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 To play Wordle locally from your Mac by double-clicking on the index.html file in the WORDLE-LOCAL folder:\
 \
-1. Open a Terminal Window and go to your WORDLE-LOCAL folder by issuing the command below:\
-       ramsundaram@Mac ~ % cd "/Users/ramsundaram/Desktop/Desktop - Ram\'92s MacBook Air/WORDLE-LOCAL"\
-       ramsundaram@Mac WORDLE-LOCAL % pwd\
-       /Users/ramsundaram/Desktop/Desktop - Ram\'92s MacBook Air/WORDLE-LOCAL\
-       ramsundaram@Mac WORDLE-LOCAL % ls\
-       index.html		update-wordle.py	words.json\
-       play.html		update-wordle.txt\
+1. Open a Terminal Window \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs22 \cf2 \CocoaLigature0 ramsundaram@Mac ~ % pwd\
+/Users/ramsundaram\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \CocoaLigature1 ramsundaram@Mac ~ % \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+Go to your WORDLE-LOCAL folder by issuing the command below:\
+ramsundaram@Mac ~ % 
+\f1\fs22 \cf2 \CocoaLigature0 cd ~/Desktop/Desktop*Ram*/WORDLE-LOCAL
+\f0\fs24 \cf0 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 ramsundaram@Mac WORDLE-LOCAL % pwd\
+/Users/ramsundaram/Desktop/Desktop - Ram\'92s MacBook Air/WORDLE-LOCAL\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs22 \cf2 \CocoaLigature0 ramsundaram@Mac WORDLE-LOCAL % ls\
+check-status.py		index.html		Readme.rtf		update-wordle.py\
+index-backup.html	play.html		reddit_data.txt		words.json\
+ramsundaram@Mac WORDLE-LOCAL % 
+\f0\fs24 \cf0 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
 \
 2. Go to bash prompt:\
    ramsundaram@Mac WORDLE-LOCAL % bash\
    bash-3.2$\
 \
-4. Run the python script 
-\f1\b \cf2 (between 12pm - 4pm)
-\f0\b0 \cf0  to update words.json file with the word for the next day:\
-   bash-3.2$ python3 update-wordle.py\
+3. Go to www.reddit.com/r/wordle anytime after 2pm (which would be after 6am in New Zealand) and check at the top of the page under Community highlights if a rectangular banner has been pinned for the next day's Wordle game. If yes, click on the banner to open the page where players have posted their results for the next day's Wordle game. **DO NOT** scroll down the page or even galance at the page else you will see the answer for the next day's WORDLE.\
 \
-5. Run your 3 Git commands to push the update to GitHub. Only then will you be able to play the game locally from your Mac.\
+Click on any blank space on that page and do a CMD + A toselect all the page contents and a CMD + C to copy all the page contents.\
+\
+4. Open the reddit_data.txt file (with TextEdit), delete whatever is in it and paste the contents of the page copied above. Save the file and close it.\
+\
+5. Run the python script to update words.json file with the word (answer) for the next day's game.\
+bash-3.2$ python3 update-wordle.py\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs22 \cf2 \CocoaLigature0 bash-3.2$ python3 update-wordle.py\
+[Check 1] Processing local text/source file 'reddit_data.txt'...\
+[Check 2] File read successfully. Scanning for hidden word entries...\
+[Check 3] Scan complete. Found 78 total potential word patterns.\
+[Check 4] Filter complete. 78 valid candidate answers remain.\
+\uc0\u55356 \u57225  Success: Tomorrow's hidden word has been isolated!\
+Successfully synchronized 3-day words.json!\
+bash-3.2$ \
+
+\f0\fs24 \cf0 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+6. Next, run check-status.py script to check if the word (answer) for the next day's game got updated correctly in words.json file:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs22 \cf2 \CocoaLigature0 bash-3.2$ python3 check-status.py\
+--- Wordle Verification Status ---\
+\uc0\u9989  SUCCESS: Tomorrow's word has been successfully updated with a fresh, hidden 5-letter answer!\
+   (No spoilers revealed. You are safe to play your game!)\
+bash-3.2$ \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \CocoaLigature1 \
+\
+7. Run your 3 Git commands to push the update to your GitHub repository. Only then will you and others will be able to play the game.\
    bash-3.2$ git add words.json\
    bash-3.2$ git commit -m "Daily Wordle update"\
    bash-3.2$ git push origin main\
@@ -50,6 +98,6 @@ If you play today's game or tomorrow's game a second time and get message: "You 
 \cf3 Note:\
 Do not change values assigned to 
 \f2\fs26 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec4 ANCHOR_DATE
+ANCHOR_DATE
 \f3\fs24  and 
 \f2\fs26 ANCHOR_GAME_NUM; these are anchor variables that the script logic uses to do word (answer)selection.}
