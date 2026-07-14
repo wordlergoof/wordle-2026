@@ -33,7 +33,7 @@
         [data-s="c"] { background: #6aaa64 !important; border-color: #6aaa64 !important; color: #ffffff !important; }
         [data-s="p"] { background: #c9b458 !important; border-color: #c9b458 !important; color: #ffffff !important; }
         [data-s="a"] { background: #787c7e !important; border-color: #787c7e !important; color: #ffffff !important; }
-        #share { display: none; background: #6aaa64; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; margin: 10px; font-weight: bold; width: 90%; }
+        
         .controls { margin-bottom: 5px; display: flex; justify-content: center; align-items: center; gap: 10px; color: #787c7e; font-weight: bold; font-size: 0.7rem; width: 100%; }
         .switch { position: relative; width: 34px; height: 18px; display: inline-block; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -44,15 +44,24 @@
         #msg { height: 25px; font-weight: bold; color: #6aaa64; text-align: center; font-size: 0.8rem; margin-bottom: 5px; }
         #expired { display: none; text-align: center; margin-top: 50px; font-weight: bold; color: #787c7e; width: 100%; padding: 20px; }
         
-        /* NYT Style Horizontal Flip Animation Class - Slowed down to 0.75s */
+        /* NYT Swivel Animation */
         .flip {
             animation: flipTile 0.75s ease-in-out forwards;
         }
-
         @keyframes flipTile {
             0% { transform: rotateX(0deg); }
             45% { transform: rotateX(90deg); } 
             100% { transform: rotateX(0deg); }
+        }
+
+        /* NYT Victory Jiggle/Bounce Animation */
+        .bounce {
+            animation: bounceTile 0.5s ease-in-out forwards;
+        }
+        @keyframes bounceTile {
+            0%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
         }
 
         /* NYT Style Welcome Back Overlay Screen CSS */
@@ -68,45 +77,84 @@
             font-family: Georgia, serif;
             margin-top: 40px;
         }
-        #welcome-back h1 {
-            font-size: 2.5rem;
+        #welcome-back h1 { font-size: 2.5rem; font-weight: 800; margin: 20px 0 10px 0; color: #000000; }
+        #welcome-back p { font-size: 1.4rem; color: #000000; margin-bottom: 30px; font-family: sans-serif; }
+        #welcome-back button { background-color: #121213; color: #ffffff; border: none; padding: 14px 40px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; transition: background-color 0.2s; }
+        #welcome-back button:hover { background-color: #2f2f31; }
+        
+        .mini-grid-icon { display: grid; grid-template-columns: repeat(3, 16px); gap: 2px; margin-bottom: 10px; }
+        .mini-tile { width: 16px; height: 16px; border: 1.5px solid #121213; }
+        .mini-tile.green { background-color: #6aaa64; border-color: #6aaa64; }
+
+        /* MATCHING SCREENSHOT: Congratulations Page Layout Modifications */
+        #congrats-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 375px;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+        }
+        #congrats-screen h1 {
+            font-family: Arial, sans-serif; /* Clean font stack matching the screenshot header style */
+            font-size: 2.3rem;
             font-weight: 800;
-            margin: 20px 0 10px 0;
+            margin: 15px 0 50px 0;
             color: #000000;
+            letter-spacing: -0.5px;
         }
-        #welcome-back p {
-            font-size: 1.4rem;
-            color: #000000;
-            margin-bottom: 30px;
-            font-family: sans-serif;
+        
+        /* Star enclosed inside a soft green badge container */
+        .star-container {
+            width: 58px;
+            height: 58px;
+            background-color: #81b16c;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #welcome-back button {
-            background-color: #121213;
+        .star-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #ffffff;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        /* MATCHING SCREENSHOT: Capsule shaped Share button styling */
+        #congrats-share-btn {
+            background-color: #5c9e54; /* Clean mid-tone green */
             color: #ffffff;
             border: none;
-            padding: 14px 40px;
-            font-size: 1rem;
+            padding: 13px 45px;
+            font-size: 1.2rem;
             font-weight: bold;
-            border-radius: 25px;
+            border-radius: 30px; /* Forces capsule oval styling shape */
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             font-family: sans-serif;
-            transition: background-color 0.2s;
+            transition: background-color 0.15s;
+            -webkit-tap-highlight-color: transparent;
         }
-        #welcome-back button:hover {
-            background-color: #2f2f31;
+        #congrats-share-btn:hover {
+            background-color: #4d8646;
         }
-        .mini-grid-icon {
-            display: grid;
-            grid-template-columns: repeat(3, 16px);
-            gap: 2px;
-            margin-bottom: 10px;
+        /* Inline SVG wrapper for the exact structural share path layout nodes */
+        .share-svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
-        .mini-tile {
-            width: 16px;
-            height: 16px;
-            border: 1.5px solid #121213;
-        }
-        .mini-tile.green { background-color: #6aaa64; border-color: #6aaa64; }
     </style>
 </head>
 <body>
@@ -123,6 +171,22 @@
     <button onclick="resumeGame()">Continue</button>
 </div>
 
+<!-- MATCHING SCREENSHOT: Isolated layout view content wrapper -->
+<div id="congrats-screen">
+    <div class="star-container"><div class="star-icon"></div></div>
+    <h1>Congratulations!</h1>
+    <button id="congrats-share-btn" onclick="sh()">
+        Share 
+        <svg class="share-svg" viewBox="0 0 24 24">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+    </button>
+</div>
+
 <div id="game-container">
     <header id="puzNum">WORDLE #1702</header>
     <div class="controls">
@@ -130,7 +194,7 @@
         <label class="switch"><input type="checkbox" id="hm"><span class="slider"></span></label>
     </div>
     <div id="msg"></div>
-    <button id="share" onclick="sh()">SHARE RESULT 📋</button>
+    
     <div id="board">
         <div class="row"><div class="tile" id="t00"></div><div class="tile" id="t01"></div><div class="tile" id="t02"></div><div class="tile" id="t03"></div><div class="tile" id="t04"></div></div>
         <div class="row"><div class="tile" id="t10"></div><div class="tile" id="t11"></div><div class="tile" id="t12"></div><div class="tile" id="t13"></div><div class="tile" id="t14"></div></div>
@@ -190,15 +254,19 @@ async function initGame() {
             
             document.getElementById("board").innerHTML = state.boardHtml;
 
-            // Strip out any lingering '.flip' animation classes from the saved layout structure
             const tiles = document.getElementsByClassName("tile");
             for (let i = 0; i < tiles.length; i++) {
                 tiles[i].classList.remove("flip");
+                tiles[i].classList.remove("bounce");
             }
 
             if (done) {
-                document.getElementById("share").style.display = "block";
-                document.getElementById("msg").textContent = win ? "GENIUS!" : ans;
+                if (win) {
+                    document.getElementById('game-container').style.display = 'none';
+                    document.getElementById('congrats-screen').style.display = 'flex';
+                } else {
+                    document.getElementById("msg").textContent = ans;
+                }
             } else if (r > 0 || c > 0) {
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('welcome-msg').textContent = "You’ve made " + r + " of 6 guesses. Keep it up!";
@@ -219,11 +287,11 @@ function resumeGame() {
 }
 
 function saveGameState() {
-    // Strip out flip classes before saving layout state so they don't latch permanently
     var boardClone = document.getElementById("board").cloneNode(true);
     var savedTiles = boardClone.getElementsByClassName("tile");
     for (let i = 0; i < savedTiles.length; i++) {
         savedTiles[i].classList.remove("flip");
+        savedTiles[i].classList.remove("bounce");
     }
 
     const state = {
@@ -305,14 +373,13 @@ function ch() {
 
     for (let i = 0; i < 5; i++) {
         rowTiles[i].classList.remove("flip");
+        rowTiles[i].classList.remove("bounce");
     }
 
-    // Interactive cascade engine with modified tempo adjustments
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
             rowTiles[i].classList.add("flip");
 
-            // Swap colors halfway through the slower 0.75s animation (~375ms)
             setTimeout(() => {
                 if (rowEm[i] == "🟩") {
                     rowTiles[i].setAttribute("data-s", "c");
@@ -323,22 +390,42 @@ function ch() {
                 }
             }, 375);
 
-        }, i * 280); // Increased stagger interval from 200ms to 280ms
+        }, i * 280); 
     }
 
     ems.push(rowEm.join(""));
     r++;
     
+    var swivelDuration = (4 * 280) + 750;
+
     setTimeout(() => {
-        if (currentGuess == ans || currentRow == 5) {
+        if (currentGuess == ans) {
             done = true;
-            win = (currentGuess == ans);
-            document.getElementById("share").style.display = "block";
-            document.getElementById("msg").textContent = win ? "GENIUS!" : ans;
+            win = true;
             localStorage.setItem('wordle_played_date', dateKey);
+
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    rowTiles[i].classList.add("bounce");
+                }, i * 100); 
+            }
+
+            setTimeout(() => {
+                document.getElementById('game-container').style.display = 'none';
+                document.getElementById('congrats-screen').style.display = 'flex';
+                saveGameState();
+            }, (4 * 100) + 600);
+
+        } else if (currentRow == 5) {
+            done = true;
+            win = false;
+            localStorage.setItem('wordle_played_date', dateKey);
+            document.getElementById("msg").textContent = ans;
+            saveGameState();
+        } else {
+            saveGameState();
         }
-        saveGameState();
-    }, (4 * 280) + 750);
+    }, swivelDuration);
 
     c = 0;
     g = "";
@@ -360,7 +447,14 @@ function sh() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
     navigator.clipboard.writeText(text).then(() => {
-        document.getElementById("msg").textContent = "COPIED!";
+        if(document.getElementById('congrats-screen').style.display === 'flex') {
+            var btn = document.getElementById("congrats-share-btn");
+            var originalHtml = btn.innerHTML;
+            btn.innerHTML = 'Copied! 📋';
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+            }, 2000);
+        }
     });
 }
 
