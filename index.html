@@ -56,9 +56,76 @@
             45% { transform: rotateX(90deg); } /* Flat edge-on point */
             100% { transform: rotateX(0deg); }
         }
+
+        /* NYT Style Welcome Back Overlay Screen CSS */
+        #welcome-back {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            padding: 40px 20px;
+            font-family: Georgia, serif;
+            margin-top: 40px;
+        }
+        #welcome-back h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 20px 0 10px 0;
+            color: #000000;
+        }
+        #welcome-back p {
+            font-size: 1.4rem;
+            color: #000000;
+            margin-bottom: 30px;
+            font-family: sans-serif;
+        }
+        #welcome-back button {
+            background-color: #121213;
+            color: #ffffff;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: sans-serif;
+            transition: background-color 0.2s;
+        }
+        #welcome-back button:hover {
+            background-color: #2f2f31;
+        }
+        .mini-grid-icon {
+            display: grid;
+            grid-template-columns: repeat(3, 16px);
+            gap: 2px;
+            margin-bottom: 10px;
+        }
+        .mini-tile {
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid #121213;
+        }
+        .mini-tile.green { background-color: #6aaa64; border-color: #6aaa64; }
     </style>
 </head>
 <body>
+
+<!-- NYT Welcome Back Screen Layout Container -->
+<div id="welcome-back">
+    <div class="mini-grid-icon">
+        <div class="mini-tile"></div><div class="mini-tile"></div><div class="mini-tile"></div>
+        <div class="mini-tile"></div><div class="mini-tile green"></div><div class="mini-tile"></div>
+        <div class="mini-tile green"></div><div class="mini-tile green"></div><div class="mini-tile green"></div>
+    </div>
+    <div style="font-family: sans-serif; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase;">Wordle</div>
+    <h1>Welcome Back</h1>
+    <p id="welcome-msg">You've made 0 of 6 guesses. Keep it up!</p>
+    <button onclick="resumeGame()">Continue</button>
+</div>
+
 <div id="game-container">
     <header id="puzNum">WORDLE #1702</header>
     <div class="controls">
@@ -129,6 +196,11 @@ async function initGame() {
             if (done) {
                 document.getElementById("share").style.display = "block";
                 document.getElementById("msg").textContent = win ? "GENIUS!" : ans;
+            } else if (r > 0 || c > 0) {
+                // If they have made progress but aren't done, intercept layout visibility
+                document.getElementById('game-container').style.display = 'none';
+                document.getElementById('welcome-msg').textContent = "You’ve made " + r + " of 6 guesses. Keep it up!";
+                document.getElementById('welcome-back').style.display = 'flex';
             }
         }
 
@@ -137,6 +209,12 @@ async function initGame() {
         ans = todayData.word;
         document.getElementById("puzNum").textContent = "WORDLE #" + todayData.num;
     }
+}
+
+// Function triggered when the player taps 'Continue'
+function resumeGame() {
+    document.getElementById('welcome-back').style.display = 'none';
+    document.getElementById('game-container').style.display = 'flex';
 }
 
 function saveGameState() {
@@ -216,9 +294,13 @@ function ch() {
         }
     }
 
-    // Capture current row metrics into variables for asynchronous execution protection
     var currentGuess = g;
     var currentRow = r;
+
+    // Remove any previously added flip animations to clean up state before firing new animations
+    for (let i = 0; i < 5; i++) {
+        rowTiles[i].classList.remove("flip");
+    }
 
     // Sequential cascade engine to step flip transitions 
     for (let i = 0; i < 5; i++) {
@@ -270,6 +352,7 @@ function showMsg(m) {
     }, 2000);
 }
 
+// Ensure the clear signature text copy button remains valid
 function sh() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
