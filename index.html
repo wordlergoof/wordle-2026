@@ -10,7 +10,6 @@
         header { font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #d3d6da; width: 100%; text-align: center; padding: 5px 0; margin-bottom: 5px; }
         #game-container { width: 100%; max-width: 375px; display: flex; flex-direction: column; align-items: center; }
         
-        /* Enhanced .tile to handle 3D perspective transformations smoothly */
         .tile { 
             width: 40px; 
             height: 40px; 
@@ -23,7 +22,6 @@
             margin: 2px; 
             text-transform: uppercase; 
             color: #000000;
-            transition: transform 0.6s;
             transform-style: preserve-3d;
             backface-visibility: list-item;
         }
@@ -46,14 +44,14 @@
         #msg { height: 25px; font-weight: bold; color: #6aaa64; text-align: center; font-size: 0.8rem; margin-bottom: 5px; }
         #expired { display: none; text-align: center; margin-top: 50px; font-weight: bold; color: #787c7e; width: 100%; padding: 20px; }
         
-        /* NYT Style Horizontal Flip Animation Class */
+        /* NYT Style Horizontal Flip Animation Class - Slowed down to 0.75s */
         .flip {
-            animation: flipTile 0.55s ease-in-out forwards;
+            animation: flipTile 0.75s ease-in-out forwards;
         }
 
         @keyframes flipTile {
             0% { transform: rotateX(0deg); }
-            45% { transform: rotateX(90deg); } /* Flat edge-on point */
+            45% { transform: rotateX(90deg); } 
             100% { transform: rotateX(0deg); }
         }
 
@@ -113,7 +111,6 @@
 </head>
 <body>
 
-<!-- NYT Welcome Back Screen Layout Container -->
 <div id="welcome-back">
     <div class="mini-grid-icon">
         <div class="mini-tile"></div><div class="mini-tile"></div><div class="mini-tile"></div>
@@ -193,11 +190,16 @@ async function initGame() {
             
             document.getElementById("board").innerHTML = state.boardHtml;
 
+            // Strip out any lingering '.flip' animation classes from the saved layout structure
+            const tiles = document.getElementsByClassName("tile");
+            for (let i = 0; i < tiles.length; i++) {
+                tiles[i].classList.remove("flip");
+            }
+
             if (done) {
                 document.getElementById("share").style.display = "block";
                 document.getElementById("msg").textContent = win ? "GENIUS!" : ans;
             } else if (r > 0 || c > 0) {
-                // If they have made progress but aren't done, intercept layout visibility
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('welcome-msg').textContent = "You’ve made " + r + " of 6 guesses. Keep it up!";
                 document.getElementById('welcome-back').style.display = 'flex';
@@ -211,13 +213,19 @@ async function initGame() {
     }
 }
 
-// Function triggered when the player taps 'Continue'
 function resumeGame() {
     document.getElementById('welcome-back').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
 }
 
 function saveGameState() {
+    // Strip out flip classes before saving layout state so they don't latch permanently
+    var boardClone = document.getElementById("board").cloneNode(true);
+    var savedTiles = boardClone.getElementsByClassName("tile");
+    for (let i = 0; i < savedTiles.length; i++) {
+        savedTiles[i].classList.remove("flip");
+    }
+
     const state = {
         r: r,
         c: c,
@@ -227,7 +235,7 @@ function saveGameState() {
         greens: greens,
         yellows: yellows,
         ems: ems,
-        boardHtml: document.getElementById("board").innerHTML
+        boardHtml: boardClone.innerHTML
     };
     localStorage.setItem('wordle_current_state_' + dateKey, JSON.stringify(state));
 }
@@ -273,7 +281,6 @@ function ch() {
     var chk = ans.split("");
     var rowEm = ["⬛","⬛","⬛","⬛","⬛"];
     
-    // Pass 1: Tag direct matches (Greens)
     for (var i = 0; i < 5; i++) {
         if (g[i] == ans[i]) {
             greens[i] = g[i];
@@ -281,7 +288,6 @@ function ch() {
             rowEm[i] = "🟩";
         }
     }
-    // Pass 2: Tag shifts (Yellows vs Grays)
     for (var i = 0; i < 5; i++) {
         if (rowEm[i] == "🟩") continue;
         var idx = chk.indexOf(g[i]);
@@ -297,17 +303,16 @@ function ch() {
     var currentGuess = g;
     var currentRow = r;
 
-    // Remove any previously added flip animations to clean up state before firing new animations
     for (let i = 0; i < 5; i++) {
         rowTiles[i].classList.remove("flip");
     }
 
-    // Sequential cascade engine to step flip transitions 
+    // Interactive cascade engine with modified tempo adjustments
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
             rowTiles[i].classList.add("flip");
 
-            // Swap colors halfway through (250ms into animation)
+            // Swap colors halfway through the slower 0.75s animation (~375ms)
             setTimeout(() => {
                 if (rowEm[i] == "🟩") {
                     rowTiles[i].setAttribute("data-s", "c");
@@ -316,15 +321,14 @@ function ch() {
                 } else {
                     rowTiles[i].setAttribute("data-s", "a");
                 }
-            }, 250);
+            }, 375);
 
-        }, i * 200); // 200ms stagger offset between characters
+        }, i * 280); // Increased stagger interval from 200ms to 280ms
     }
 
     ems.push(rowEm.join(""));
     r++;
     
-    // Hold final win/loss validation evaluations until row presentation completes
     setTimeout(() => {
         if (currentGuess == ans || currentRow == 5) {
             done = true;
@@ -334,7 +338,7 @@ function ch() {
             localStorage.setItem('wordle_played_date', dateKey);
         }
         saveGameState();
-    }, (4 * 200) + 550);
+    }, (4 * 280) + 750);
 
     c = 0;
     g = "";
@@ -352,7 +356,6 @@ function showMsg(m) {
     }, 2000);
 }
 
-// Ensure the clear signature text copy button remains valid
 function sh() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
@@ -361,7 +364,6 @@ function sh() {
     });
 }
 
-// --- 4. Start the game ---
 initGame();
 </script>
 </body>
