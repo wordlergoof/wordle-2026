@@ -77,21 +77,44 @@ bash-3.2$ \
 \f0\fs24 \cf0 \CocoaLigature1 \
 \
 7. Run your 3 Git commands to push the update to your GitHub repository. Only then will you and others will be able to play the game.\
-   bash-3.2$ git add words.json\
-   bash-3.2$ git commit -m "Daily Wordle update"\
-   bash-3.2$ git push origin main\
+   
+\f1\fs22 \cf2 \CocoaLigature0 bash-3.2$ git add .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+bash-3.2$ git commit -m "Update words.json list"\
+[main 0f9cf55] Update words.json list\
+ Committer: Ram Sundaram <ramsundaram@Mac.attlocal.net>\
+Your name and email address were configured automatically based\
+on your username and hostname. Please check that they are accurate.\
+You can suppress this message by setting them explicitly. Run the\
+following command and follow the instructions in your editor to edit\
+your configuration file:\
 \
+    git config --global --edit\
 \
-What each command does:\
-git add words.json \'96 Tells Git to look specifically at your newly updated local file and stage it for the upload.\
+After doing this, you may fix the identity used for this commit with:\
 \
-git commit -m "Daily Wordle update" \'96 Packages up that staged change and stamps it with a quick label describing what you did.\
+    git commit --amend --reset-author\
 \
-git push origin main \'96 Shoots that package out over the internet to your GitHub repository.\
+ 4 files changed, 1290 insertions(+), 241 deletions(-)\
+ create mode 100644 index-backup.html\
+bash-3.2$ git push\
+Enumerating objects: 9, done.\
+Counting objects: 100% (9/9), done.\
+Delta compression using up to 8 threads\
+Compressing objects: 100% (5/5), done.\
+Writing objects: 100% (5/5), 9.33 KiB | 9.33 MiB/s, done.\
+Total 5 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)\
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.\
+To https://github.com/wordlergoof/wordle-2026.git\
+   6dce903..0f9cf55  main -> main\
+bash-3.2$ \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \CocoaLigature1 \
 \
-Once that third command finishes running, your GitHub Pages site updates instantly. You can then open Safari, go to your link (https://wordlergoof.github.io/wordle-2026/), and play the game using the newly fetched words! This is the way to play the game using the link from the github repository. But we will not be playing the game this way. Rather, we will play the game locally by clicking on the index.html link in the WORDLE-LOCAL folder on the Mac. To play today's game, just double-click on the index.html file in the folder. To play tomorrow's game, you will need to advance the Mac system clock to the next day and then double-click the index.html file. After playing tomorrow's game, remember to set the system clock to the current date and time.\
+Once that third command finishes running, your GitHub Pages site updates instantly. You can then open Safari, go to your GitHub link (https://wordlergoof.github.io/wordle-2026/), and play today's game & tomorrow's game. To play tomorrow's game, you will need to advance the Mac system clock to the next day and then play. After playing tomorrow's game, remember to set the system clock to the current date and time.\
 \
-If you play today's game or tomorrow's game a second time and get message: "You have already played today's game", you can play the game again by opening a Safari window in Incognito mode: Command + Shift + N\
+If you play today's game or tomorrow's game a second time and get message: "You have already played today's game", you can play the game again by opening a Safari window in Incognito mode: Command + Shift + N; to play the game in the regular Safari window (non-incognito mode), you will need to clear the browser cache entry for the url in question. To do this, when in Safari, go to Settings --> Privacy --> click on Manage Websites Data and type wordlergoof (github user-id) in the search box and hit Remove.\
 \
 \
 ****************************************************************************************************************************************************************************************\
