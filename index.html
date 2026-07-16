@@ -102,7 +102,7 @@
             font-family: Arial, sans-serif; /* Clean font stack matching the screenshot header style */
             font-size: 2.3rem;
             font-weight: 800;
-            margin: 15px 0 50px 0;
+            margin: 15px 0 40px 0;
             color: #000000;
             letter-spacing: -0.5px;
         }
@@ -155,6 +155,45 @@
             stroke-linecap: round;
             stroke-linejoin: round;
         }
+
+        /* NEW STYLE: Admire Puzzle button */
+        #admire-puzzle-btn {
+            background-color: #787c7e;
+            color: #ffffff;
+            border: none;
+            padding: 11px 35px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-family: sans-serif;
+            transition: background-color 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #admire-puzzle-btn:hover {
+            background-color: #616466;
+        }
+
+        /* NEW STYLE: Pill-shaped See Results button */
+        #see-results-btn {
+            display: none; /* Hidden by default */
+            background-color: #121213;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: sans-serif;
+            margin-top: 25px;
+            transition: background-color 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #see-results-btn:hover {
+            background-color: #2f2f31;
+        }
     </style>
 </head>
 <body>
@@ -185,6 +224,8 @@
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
     </button>
+    <!-- NEW: Admire Puzzle button added below Share button -->
+    <button id="admire-puzzle-btn" onclick="admirePuzzle()">Admire Puzzle</button>
 </div>
 
 <div id="game-container">
@@ -203,6 +244,10 @@
         <div class="row"><div class="tile" id="t40"></div><div class="tile" id="t41"></div><div class="tile" id="t42"></div><div class="tile" id="t43"></div><div class="tile" id="t44"></div></div>
         <div class="row"><div class="tile" id="t50"></div><div class="tile" id="t51"></div><div class="tile" id="t52"></div><div class="tile" id="t53"></div><div class="tile" id="t54"></div></div>
     </div>
+
+    <!-- NEW: See Results button added below the grid -->
+    <button id="see-results-btn" onclick="seeResults()">See Results</button>
+
     <div id="keys" style="margin-top:10px; width: 100%;">
         <div class="kb-row"><div class="key" onclick="pr('Q')">Q</div><div class="key" onclick="pr('W')">W</div><div class="key" onclick="pr('E')">E</div><div class="key" onclick="pr('R')">R</div><div class="key" onclick="pr('T')">T</div><div class="key" onclick="pr('Y')">Y</div><div class="key" onclick="pr('U')">U</div><div class="key" onclick="pr('I')">I</div><div class="key" onclick="pr('O')">O</div><div class="key" onclick="pr('P')">P</div></div>
         <div class="kb-row"><div class="key" onclick="pr('A')">A</div><div class="key" onclick="pr('S')">S</div><div class="key" onclick="pr('D')">D</div><div class="key" onclick="pr('F')">F</div><div class="key" onclick="pr('G')">G</div><div class="key" onclick="pr('H')">H</div><div class="key" onclick="pr('J')">J</div><div class="key" onclick="pr('K')">K</div><div class="key" onclick="pr('L')">L</div></div>
@@ -262,8 +307,10 @@ async function initGame() {
 
             if (done) {
                 if (win) {
-                    document.getElementById('game-container').style.display = 'none';
-                    document.getElementById('congrats-screen').style.display = 'flex';
+                    // Start in game view, but show the "See Results" button so players can toggle to stats
+                    document.getElementById('game-container').style.display = 'flex';
+                    document.getElementById('keys').style.display = 'none'; // Hide keyboard once won
+                    document.getElementById('see-results-btn').style.display = 'block';
                 } else {
                     document.getElementById("msg").textContent = ans;
                 }
@@ -410,11 +457,13 @@ function ch() {
                 }, i * 100); 
             }
 
+            // ADDED: Pause/Delay before showing the Congratulations Screen
+            // (4 * 100) + 600 is the duration of the bounce animation. We add 1500ms (1.5s) to it.
             setTimeout(() => {
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
                 saveGameState();
-            }, (4 * 100) + 600);
+            }, (4 * 100) + 600 + 1500); 
 
         } else if (currentRow == 5) {
             done = true;
@@ -456,6 +505,20 @@ function sh() {
             }, 2000);
         }
     });
+}
+
+// NEW: Handlers for toggling views between Grid and Congratulations Screen
+function admirePuzzle() {
+    document.getElementById('congrats-screen').style.display = 'none';
+    document.getElementById('game-container').style.display = 'flex';
+    document.getElementById('keys').style.display = 'none'; // Ensure keyboard remains hidden
+    document.getElementById('see-results-btn').style.display = 'block'; // Show the toggle back button
+}
+
+function seeResults() {
+    document.getElementById('game-container').style.display = 'none';
+    document.getElementById('congrats-screen').style.display = 'flex';
+    document.getElementById('see-results-btn').style.display = 'none'; // Reset state
 }
 
 initGame();
