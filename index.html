@@ -54,25 +54,25 @@
             100% { transform: rotateX(0deg); }
         }
 
-        /* FIXED: Slowed down for a gentle, satisfying float and elastic drop */
+        /* FIXED: Beautiful, slow, and gentle fluid glide */
         .bounce {
-            animation: bounceTile 0.85s ease-in-out forwards;
+            animation: bounceTile 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
         }
         @keyframes bounceTile {
-            0%, 20% {
+            0% {
                 transform: translateY(0);
             }
             40% {
-                transform: translateY(-20px); /* Clean upward leap */
+                transform: translateY(-12px); /* Soft, subtle height peak */
             }
-            50% {
-                transform: translateY(4px);   /* Soft overshoot past the baseline */
+            70% {
+                transform: translateY(2px);   /* Gentle, cushiony landing */
             }
-            60% {
-                transform: translateY(-2px);  /* Gentle secondary mini-rebound */
+            85% {
+                transform: translateY(-1px);  /* Barely perceptible settle */
             }
-            80%, 100% {
-                transform: translateY(0);     /* Smooth settlement on baseline */
+            100% {
+                transform: translateY(0);     /* Back to rest */
             }
         }
 
@@ -98,7 +98,7 @@
         .mini-tile { width: 16px; height: 16px; border: 1.5px solid #121213; }
         .mini-tile.green { background-color: #6aaa64; border-color: #6aaa64; }
 
-        /* MATCHING SCREENSHOT: Congratulations Page Layout Modifications */
+        /* Congratulations Page Layout Modifications */
         #congrats-screen {
             display: none;
             flex-direction: column;
@@ -136,7 +136,7 @@
             clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
         }
 
-        /* MATCHING SCREENSHOT: Capsule shaped Share button styling */
+        /* Capsule shaped Share button styling */
         #congrats-share-btn {
             background-color: #5c9e54; 
             color: #ffffff;
@@ -222,7 +222,7 @@
     <button onclick="resumeGame()">Continue</button>
 </div>
 
-<!-- MATCHING SCREENSHOT: Isolated layout view content wrapper -->
+<!-- Isolated layout view content wrapper -->
 <div id="congrats-screen">
     <div class="star-container"><div class="star-icon"></div></div>
     <h1>Congratulations!</h1>
@@ -460,15 +460,14 @@ function ch() {
             win = true;
             localStorage.setItem('wordle_played_date', dateKey);
 
-            // STAGGER DELAY: Increased to 180ms for a slower, elegant succession
+            // STAGGER DELAY: Increased to 250ms for a gorgeous, lazy rolling succession
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
                     rowTiles[i].classList.add("bounce");
-                }, i * 180); 
+                }, i * 250); 
             }
 
-            // Pause before switching to Congratulations Screen
-            // (Increased timeout to allow the slower wave to finish playing gracefully first)
+            // Let the beautiful slow wave play in full before shifting views
             setTimeout(() => {
                 const tiles = document.getElementsByClassName("tile");
                 for (let i = 0; i < tiles.length; i++) {
@@ -478,7 +477,7 @@ function ch() {
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
                 saveGameState();
-            }, (4 * 180) + 900 + 1500); 
+            }, (4 * 250) + 1200 + 1500); 
 
         } else if (currentRow == 5) {
             done = true;
