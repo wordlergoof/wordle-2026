@@ -54,22 +54,25 @@
             100% { transform: rotateX(0deg); }
         }
 
-        /* REFINED: NYT Victory Jiggle/Bounce Animation with Hang-Time Physics */
+        /* FIXED: True NYT Elastic Victory Wave Bounce Animation */
         .bounce {
-            animation: bounceTile 0.55s ease-in-out forwards;
+            animation: bounceTile 0.6s ease-in-out forwards;
         }
         @keyframes bounceTile {
-            0% {
+            0%, 20% {
                 transform: translateY(0);
             }
             40% {
-                transform: translateY(-24px); /* Crisp, energetic jump upward */
+                transform: translateY(-20px); /* Clean upward leap */
+            }
+            50% {
+                transform: translateY(4px);   /* Elastic overshoot past the baseline (impact squish) */
             }
             60% {
-                transform: translateY(-24px); /* Captures the perfect "hang-time" at the peak */
+                transform: translateY(-2px);  /* Light secondary micro-rebound upward */
             }
-            100% {
-                transform: translateY(0); /* Smooth, gravity-assisted snap back to baseline */
+            80%, 100% {
+                transform: translateY(0);     /* Seamlessly settle back on baseline */
             }
         }
 
@@ -306,6 +309,7 @@ async function initGame() {
             
             document.getElementById("board").innerHTML = state.boardHtml;
 
+            // Strip animations to keep saved boards completely static on load
             const tiles = document.getElementsByClassName("tile");
             for (let i = 0; i < tiles.length; i++) {
                 tiles[i].classList.remove("flip");
@@ -465,6 +469,13 @@ function ch() {
 
             // Pause before switching to Congratulations Screen
             setTimeout(() => {
+                // Strip the bounce/flip animation classes right before changing layout display
+                // to completely prevent them from re-triggering during the view transition.
+                const tiles = document.getElementsByClassName("tile");
+                for (let i = 0; i < tiles.length; i++) {
+                    tiles[i].classList.remove("flip");
+                    tiles[i].classList.remove("bounce");
+                }
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
                 saveGameState();
@@ -515,6 +526,13 @@ function sh() {
 
 // Handlers for toggling views between Grid and Congratulations Screen
 function admirePuzzle() {
+    // Explicitly strip animation classes once more from the grid tiles to ensure absolutely zero movement on reveal
+    const tiles = document.getElementsByClassName("tile");
+    for (let i = 0; i < tiles.length; i++) {
+        tiles[i].classList.remove("flip");
+        tiles[i].classList.remove("bounce");
+    }
+    
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
     document.getElementById('keys').style.display = 'none'; 
