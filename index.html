@@ -54,14 +54,23 @@
             100% { transform: rotateX(0deg); }
         }
 
-        /* NYT Victory Jiggle/Bounce Animation */
+        /* REFINED: NYT Victory Jiggle/Bounce Animation with Hang-Time Physics */
         .bounce {
-            animation: bounceTile 0.5s ease-in-out forwards;
+            animation: bounceTile 0.55s ease-in-out forwards;
         }
         @keyframes bounceTile {
-            0%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
+            0% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-24px); /* Crisp, energetic jump upward */
+            }
+            60% {
+                transform: translateY(-24px); /* Captures the perfect "hang-time" at the peak */
+            }
+            100% {
+                transform: translateY(0); /* Smooth, gravity-assisted snap back to baseline */
+            }
         }
 
         /* NYT Style Welcome Back Overlay Screen CSS */
@@ -156,7 +165,7 @@
             stroke-linejoin: round;
         }
 
-        /* NEW STYLE: Admire Puzzle button */
+        /* Admire Puzzle button */
         #admire-puzzle-btn {
             background-color: #787c7e;
             color: #ffffff;
@@ -175,7 +184,7 @@
             background-color: #616466;
         }
 
-        /* NEW STYLE: Pill-shaped See Results button */
+        /* Pill-shaped See Results button */
         #see-results-btn {
             display: none; /* Hidden by default */
             background-color: #121213;
@@ -224,7 +233,6 @@
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
     </button>
-    <!-- NEW: Admire Puzzle button added below Share button -->
     <button id="admire-puzzle-btn" onclick="admirePuzzle()">Admire Puzzle</button>
 </div>
 
@@ -245,7 +253,6 @@
         <div class="row"><div class="tile" id="t50"></div><div class="tile" id="t51"></div><div class="tile" id="t52"></div><div class="tile" id="t53"></div><div class="tile" id="t54"></div></div>
     </div>
 
-    <!-- NEW: See Results button added below the grid -->
     <button id="see-results-btn" onclick="seeResults()">See Results</button>
 
     <div id="keys" style="margin-top:10px; width: 100%;">
@@ -307,9 +314,8 @@ async function initGame() {
 
             if (done) {
                 if (win) {
-                    // Start in game view, but show the "See Results" button so players can toggle to stats
                     document.getElementById('game-container').style.display = 'flex';
-                    document.getElementById('keys').style.display = 'none'; // Hide keyboard once won
+                    document.getElementById('keys').style.display = 'none'; 
                     document.getElementById('see-results-btn').style.display = 'block';
                 } else {
                     document.getElementById("msg").textContent = ans;
@@ -457,8 +463,7 @@ function ch() {
                 }, i * 100); 
             }
 
-            // ADDED: Pause/Delay before showing the Congratulations Screen
-            // (4 * 100) + 600 is the duration of the bounce animation. We add 1500ms (1.5s) to it.
+            // Pause before switching to Congratulations Screen
             setTimeout(() => {
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
@@ -492,6 +497,7 @@ function showMsg(m) {
     }, 2000);
 }
 
+// Share function
 function sh() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
@@ -507,18 +513,18 @@ function sh() {
     });
 }
 
-// NEW: Handlers for toggling views between Grid and Congratulations Screen
+// Handlers for toggling views between Grid and Congratulations Screen
 function admirePuzzle() {
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
-    document.getElementById('keys').style.display = 'none'; // Ensure keyboard remains hidden
-    document.getElementById('see-results-btn').style.display = 'block'; // Show the toggle back button
+    document.getElementById('keys').style.display = 'none'; 
+    document.getElementById('see-results-btn').style.display = 'block'; 
 }
 
 function seeResults() {
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('congrats-screen').style.display = 'flex';
-    document.getElementById('see-results-btn').style.display = 'none'; // Reset state
+    document.getElementById('see-results-btn').style.display = 'none'; 
 }
 
 initGame();
