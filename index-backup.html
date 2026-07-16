@@ -6,9 +6,11 @@
     <title>Wordle 2026</title>
     <style>
         * { box-sizing: border-box; }
-        body { background: #ffffff; color: #000000; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 5px; overflow-x: hidden; width: 100vw; -webkit-text-size-adjust: 100%; }
+        body { background: #e3e3e1; color: #000000; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 5px; overflow-x: hidden; width: 100vw; -webkit-text-size-adjust: 100%; min-height: 100vh; }
         header { font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #d3d6da; width: 100%; text-align: center; padding: 5px 0; margin-bottom: 5px; }
-        #game-container { width: 100%; max-width: 375px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Hide Game Container by default to let the Start Page shine first */
+        #game-container { display: none; width: 100%; max-width: 375px; flex-direction: column; align-items: center; }
         
         .tile { 
             width: 40px; 
@@ -54,14 +56,87 @@
             100% { transform: rotateX(0deg); }
         }
 
-        /* NYT Victory Jiggle/Bounce Animation */
+        /* Beautiful, slow, and gentle fluid glide */
         .bounce {
-            animation: bounceTile 0.5s ease-in-out forwards;
+            animation: bounceTile 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
         }
         @keyframes bounceTile {
-            0%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
+            0% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-12px); 
+            }
+            70% {
+                transform: translateY(2px);   
+            }
+            85% {
+                transform: translateY(-1px);  
+            }
+            100% {
+                transform: translateY(0);     
+            }
+        }
+
+        /* NEW: NYT Start Landing Page Styles */
+        #start-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 20px;
+            margin-top: auto;
+            margin-bottom: auto;
+            min-height: 80vh;
+        }
+        .start-logo {
+            margin-bottom: 15px;
+        }
+        .start-title {
+            font-family: Georgia, serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+        #start-play-btn {
+            background-color: #121213;
+            color: #ffffff;
+            border: none;
+            padding: 14px 60px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: sans-serif;
+            margin-bottom: 25px;
+            transition: background-color 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #start-play-btn:hover {
+            background-color: #2f2f31;
+        }
+        .start-subtitle {
+            font-family: Georgia, serif;
+            font-size: 1.6rem;
+            line-height: 1.3;
+            color: #000000;
+            max-width: 320px;
+            margin-bottom: 40px;
+        }
+        .start-date {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 5px;
+        }
+        .start-number {
+            font-size: 0.9rem;
+            color: #333333;
         }
 
         /* NYT Style Welcome Back Overlay Screen CSS */
@@ -86,7 +161,7 @@
         .mini-tile { width: 16px; height: 16px; border: 1.5px solid #121213; }
         .mini-tile.green { background-color: #6aaa64; border-color: #6aaa64; }
 
-        /* MATCHING SCREENSHOT: Congratulations Page Layout Modifications */
+        /* Congratulations Page Layout Modifications */
         #congrats-screen {
             display: none;
             flex-direction: column;
@@ -99,10 +174,10 @@
             margin-top: 50px;
         }
         #congrats-screen h1 {
-            font-family: Arial, sans-serif; /* Clean font stack matching the screenshot header style */
+            font-family: Arial, sans-serif; 
             font-size: 2.3rem;
             font-weight: 800;
-            margin: 15px 0 50px 0;
+            margin: 15px 0 40px 0;
             color: #000000;
             letter-spacing: -0.5px;
         }
@@ -124,15 +199,15 @@
             clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
         }
 
-        /* MATCHING SCREENSHOT: Capsule shaped Share button styling */
+        /* Capsule shaped Share button styling */
         #congrats-share-btn {
-            background-color: #5c9e54; /* Clean mid-tone green */
+            background-color: #5c9e54; 
             color: #ffffff;
             border: none;
             padding: 13px 45px;
             font-size: 1.2rem;
             font-weight: bold;
-            border-radius: 30px; /* Forces capsule oval styling shape */
+            border-radius: 30px; 
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -155,9 +230,72 @@
             stroke-linecap: round;
             stroke-linejoin: round;
         }
+
+        /* Admire Puzzle button */
+        #admire-puzzle-btn {
+            background-color: #787c7e;
+            color: #ffffff;
+            border: none;
+            padding: 11px 35px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-family: sans-serif;
+            transition: background-color 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #admire-puzzle-btn:hover {
+            background-color: #616466;
+        }
+
+        /* Pill-shaped See Results button */
+        #see-results-btn {
+            display: none; 
+            background-color: #121213;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: sans-serif;
+            margin-top: 25px;
+            transition: background-color 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #see-results-btn:hover {
+            background-color: #2f2f31;
+        }
     </style>
 </head>
 <body>
+
+<!-- NEW: Start Landing Page View -->
+<div id="start-page">
+    <div class="start-logo">
+        <svg width="68" height="68" viewBox="0 0 100 100">
+            <!-- Outlined Rounded Container Grid -->
+            <rect x="4" y="4" width="92" height="92" rx="16" fill="none" stroke="#121213" stroke-width="8"/>
+            <!-- Grid Partition Dividers -->
+            <line x1="4" y1="34" x2="96" y2="34" stroke="#121213" stroke-width="6"/>
+            <line x1="4" y1="66" x2="96" y2="66" stroke="#121213" stroke-width="6"/>
+            <line x1="34" y1="4" x2="34" y2="96" stroke="#121213" stroke-width="6"/>
+            <line x1="66" y1="4" x2="66" y2="96" stroke="#121213" stroke-width="6"/>
+            <!-- Solid Color Fills to match screenshot layout -->
+            <rect x="37" y="37" width="26" height="26" fill="#c9b458"/> <!-- Yellow center -->
+            <rect x="69" y="37" width="23" height="26" fill="#6aaa64"/> <!-- Green right -->
+            <rect x="37" y="69" width="26" height="23" fill="#6aaa64"/> <!-- Green bottom-center -->
+        </svg>
+    </div>
+    <div class="start-title">Wordle</div>
+    <button id="start-play-btn" onclick="startGame()">Play</button>
+    <div class="start-subtitle">Get 5 chances to guess a 6-letter word.</div>
+    <div class="start-date" id="start-date">July 16, 2026</div>
+    <div class="start-number" id="start-number">No. 1702</div>
+</div>
 
 <div id="welcome-back">
     <div class="mini-grid-icon">
@@ -171,7 +309,7 @@
     <button onclick="resumeGame()">Continue</button>
 </div>
 
-<!-- MATCHING SCREENSHOT: Isolated layout view content wrapper -->
+<!-- Isolated layout view content wrapper -->
 <div id="congrats-screen">
     <div class="star-container"><div class="star-icon"></div></div>
     <h1>Congratulations!</h1>
@@ -185,6 +323,7 @@
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
     </button>
+    <button id="admire-puzzle-btn" onclick="admirePuzzle()">Admire Puzzle</button>
 </div>
 
 <div id="game-container">
@@ -203,6 +342,9 @@
         <div class="row"><div class="tile" id="t40"></div><div class="tile" id="t41"></div><div class="tile" id="t42"></div><div class="tile" id="t43"></div><div class="tile" id="t44"></div></div>
         <div class="row"><div class="tile" id="t50"></div><div class="tile" id="t51"></div><div class="tile" id="t52"></div><div class="tile" id="t53"></div><div class="tile" id="t54"></div></div>
     </div>
+
+    <button id="see-results-btn" onclick="seeResults()">See Results</button>
+
     <div id="keys" style="margin-top:10px; width: 100%;">
         <div class="kb-row"><div class="key" onclick="pr('Q')">Q</div><div class="key" onclick="pr('W')">W</div><div class="key" onclick="pr('E')">E</div><div class="key" onclick="pr('R')">R</div><div class="key" onclick="pr('T')">T</div><div class="key" onclick="pr('Y')">Y</div><div class="key" onclick="pr('U')">U</div><div class="key" onclick="pr('I')">I</div><div class="key" onclick="pr('O')">O</div><div class="key" onclick="pr('P')">P</div></div>
         <div class="kb-row"><div class="key" onclick="pr('A')">A</div><div class="key" onclick="pr('S')">S</div><div class="key" onclick="pr('D')">D</div><div class="key" onclick="pr('F')">F</div><div class="key" onclick="pr('G')">G</div><div class="key" onclick="pr('H')">H</div><div class="key" onclick="pr('J')">J</div><div class="key" onclick="pr('K')">K</div><div class="key" onclick="pr('L')">L</div></div>
@@ -220,6 +362,7 @@ const ords = ["1st", "2nd", "3rd", "4th", "5th"];
 var ans = "";      
 var todayData = {}; 
 var dateKey = "";   
+var hasSavedState = false;
 
 // --- 2. Asynchronous Initialization ---
 async function initGame() {
@@ -230,7 +373,12 @@ async function initGame() {
         const dt = new Date();
         dateKey = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
         
+        // Dynamically build and format the date string on the landing page
+        const options = { month: 'long', day: 'numeric', year: 'numeric' };
+        document.getElementById("start-date").textContent = dt.toLocaleDateString('en-US', options);
+
         if (localStorage.getItem('wordle_played_date') === dateKey) {
+            document.getElementById('start-page').style.display = 'none';
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('expired').style.display = 'block';
             return;
@@ -239,6 +387,7 @@ async function initGame() {
         todayData = wordList[dateKey] || { word: "SCALP", num: 1702 };
         ans = todayData.word;
         document.getElementById("puzNum").textContent = "WORDLE #" + todayData.num;
+        document.getElementById("start-number").textContent = "No. " + todayData.num;
 
         const savedStateRaw = localStorage.getItem('wordle_current_state_' + dateKey);
         if (savedStateRaw) {
@@ -261,16 +410,17 @@ async function initGame() {
             }
 
             if (done) {
+                document.getElementById('start-page').style.display = 'none';
                 if (win) {
-                    document.getElementById('game-container').style.display = 'none';
-                    document.getElementById('congrats-screen').style.display = 'flex';
+                    document.getElementById('game-container').style.display = 'flex';
+                    document.getElementById('keys').style.display = 'none'; 
+                    document.getElementById('see-results-btn').style.display = 'block';
                 } else {
+                    document.getElementById('game-container').style.display = 'flex';
                     document.getElementById("msg").textContent = ans;
                 }
             } else if (r > 0 || c > 0) {
-                document.getElementById('game-container').style.display = 'none';
-                document.getElementById('welcome-msg').textContent = "You’ve made " + r + " of 6 guesses. Keep it up!";
-                document.getElementById('welcome-back').style.display = 'flex';
+                hasSavedState = true;
             }
         }
 
@@ -278,6 +428,17 @@ async function initGame() {
         console.error("Error loading word list:", error);
         ans = todayData.word;
         document.getElementById("puzNum").textContent = "WORDLE #" + todayData.num;
+    }
+}
+
+// Handler for the main start page 'Play' button click
+function startGame() {
+    document.getElementById('start-page').style.display = 'none';
+    if (hasSavedState) {
+        document.getElementById('welcome-msg').textContent = "You’ve made " + r + " of 6 guesses. Keep it up!";
+        document.getElementById('welcome-back').style.display = 'flex';
+    } else {
+        document.getElementById('game-container').style.display = 'flex';
     }
 }
 
@@ -407,14 +568,19 @@ function ch() {
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
                     rowTiles[i].classList.add("bounce");
-                }, i * 100); 
+                }, i * 250); 
             }
 
             setTimeout(() => {
+                const tiles = document.getElementsByClassName("tile");
+                for (let i = 0; i < tiles.length; i++) {
+                    tiles[i].classList.remove("flip");
+                    tiles[i].classList.remove("bounce");
+                }
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
                 saveGameState();
-            }, (4 * 100) + 600);
+            }, (4 * 250) + 1200 + 1500); 
 
         } else if (currentRow == 5) {
             done = true;
@@ -456,6 +622,25 @@ function sh() {
             }, 2000);
         }
     });
+}
+
+function admirePuzzle() {
+    const tiles = document.getElementsByClassName("tile");
+    for (let i = 0; i < tiles.length; i++) {
+        tiles[i].classList.remove("flip");
+        tiles[i].classList.remove("bounce");
+    }
+    
+    document.getElementById('congrats-screen').style.display = 'none';
+    document.getElementById('game-container').style.display = 'flex';
+    document.getElementById('keys').style.display = 'none'; 
+    document.getElementById('see-results-btn').style.display = 'block'; 
+}
+
+function seeResults() {
+    document.getElementById('game-container').style.display = 'none';
+    document.getElementById('congrats-screen').style.display = 'flex';
+    document.getElementById('see-results-btn').style.display = 'none'; 
 }
 
 initGame();
