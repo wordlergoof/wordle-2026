@@ -54,9 +54,9 @@
             100% { transform: rotateX(0deg); }
         }
 
-        /* FIXED: True NYT Elastic Victory Wave Bounce Animation */
+        /* FIXED: Slowed down for a gentle, satisfying float and elastic drop */
         .bounce {
-            animation: bounceTile 0.6s ease-in-out forwards;
+            animation: bounceTile 0.85s ease-in-out forwards;
         }
         @keyframes bounceTile {
             0%, 20% {
@@ -66,13 +66,13 @@
                 transform: translateY(-20px); /* Clean upward leap */
             }
             50% {
-                transform: translateY(4px);   /* Elastic overshoot past the baseline (impact squish) */
+                transform: translateY(4px);   /* Soft overshoot past the baseline */
             }
             60% {
-                transform: translateY(-2px);  /* Light secondary micro-rebound upward */
+                transform: translateY(-2px);  /* Gentle secondary mini-rebound */
             }
             80%, 100% {
-                transform: translateY(0);     /* Seamlessly settle back on baseline */
+                transform: translateY(0);     /* Smooth settlement on baseline */
             }
         }
 
@@ -111,7 +111,7 @@
             margin-top: 50px;
         }
         #congrats-screen h1 {
-            font-family: Arial, sans-serif; /* Clean font stack matching the screenshot header style */
+            font-family: Arial, sans-serif; 
             font-size: 2.3rem;
             font-weight: 800;
             margin: 15px 0 40px 0;
@@ -138,13 +138,13 @@
 
         /* MATCHING SCREENSHOT: Capsule shaped Share button styling */
         #congrats-share-btn {
-            background-color: #5c9e54; /* Clean mid-tone green */
+            background-color: #5c9e54; 
             color: #ffffff;
             border: none;
             padding: 13px 45px;
             font-size: 1.2rem;
             font-weight: bold;
-            border-radius: 30px; /* Forces capsule oval styling shape */
+            border-radius: 30px; 
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -189,7 +189,7 @@
 
         /* Pill-shaped See Results button */
         #see-results-btn {
-            display: none; /* Hidden by default */
+            display: none; 
             background-color: #121213;
             color: #ffffff;
             border: none;
@@ -309,7 +309,6 @@ async function initGame() {
             
             document.getElementById("board").innerHTML = state.boardHtml;
 
-            // Strip animations to keep saved boards completely static on load
             const tiles = document.getElementsByClassName("tile");
             for (let i = 0; i < tiles.length; i++) {
                 tiles[i].classList.remove("flip");
@@ -461,16 +460,16 @@ function ch() {
             win = true;
             localStorage.setItem('wordle_played_date', dateKey);
 
+            // STAGGER DELAY: Increased to 180ms for a slower, elegant succession
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
                     rowTiles[i].classList.add("bounce");
-                }, i * 100); 
+                }, i * 180); 
             }
 
             // Pause before switching to Congratulations Screen
+            // (Increased timeout to allow the slower wave to finish playing gracefully first)
             setTimeout(() => {
-                // Strip the bounce/flip animation classes right before changing layout display
-                // to completely prevent them from re-triggering during the view transition.
                 const tiles = document.getElementsByClassName("tile");
                 for (let i = 0; i < tiles.length; i++) {
                     tiles[i].classList.remove("flip");
@@ -479,7 +478,7 @@ function ch() {
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
                 saveGameState();
-            }, (4 * 100) + 600 + 1500); 
+            }, (4 * 180) + 900 + 1500); 
 
         } else if (currentRow == 5) {
             done = true;
@@ -526,7 +525,6 @@ function sh() {
 
 // Handlers for toggling views between Grid and Congratulations Screen
 function admirePuzzle() {
-    // Explicitly strip animation classes once more from the grid tiles to ensure absolutely zero movement on reveal
     const tiles = document.getElementsByClassName("tile");
     for (let i = 0; i < tiles.length; i++) {
         tiles[i].classList.remove("flip");
