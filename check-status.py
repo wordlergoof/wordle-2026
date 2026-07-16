@@ -11,27 +11,28 @@ try:
     with open("words.json", "r") as f:
         data = json.load(f)
         
-    # Extract the words for comparison without printing them
-    word_yesterday = data.get(date_yesterday, {}).get("word", "")
-    word_today = data.get(date_today, {}).get("word", "")
-    word_tomorrow = data.get(date_tomorrow, {}).get("word", "")
+    # Extract the words for comparison, cleaning up any accidental outer spaces
+    word_yesterday = data.get(date_yesterday, {}).get("word", "").strip().upper()
+    word_today = data.get(date_today, {}).get("word", "").strip().upper()
+    word_tomorrow = data.get(date_tomorrow, {}).get("word", "").strip().upper()
     
     print("--- Wordle Verification Status ---")
     
-    # Run the strict checks you requested
+    # Run the strict checks
     if not word_tomorrow:
         print("❌ STATUS: Tomorrow's date entry is missing entirely from the file.")
-    elif word_tomorrow == "?????":
-        print("❌ STATUS: Tomorrow's word is still the default placeholder ('?????').")
+    # UPDATED: Catch ANY non-alphabetic placeholder (like '?????', '---', or empty/spaces)
+    elif not word_tomorrow.isalpha():
+        print(f"❌ STATUS: Tomorrow's word is invalid or still a placeholder: '{word_tomorrow}'")
     elif word_tomorrow == word_today:
         print("❌ STATUS: Tomorrow's word is an exact duplicate of today's word.")
     elif word_tomorrow == word_yesterday:
         print("❌ STATUS: Tomorrow's word is an exact duplicate of yesterday's word.")
-    elif len(word_tomorrow) == 5 and word_tomorrow.isalpha():
+    elif len(word_tomorrow) == 5:
         print("✅ SUCCESS: Tomorrow's word has been successfully updated with a fresh, hidden 5-letter answer!")
         print("   (No spoilers revealed. You are safe to play your game!)")
     else:
-        print(f"⚠️ STATUS: Tomorrow's entry contains unexpected data structure.")
+        print(f"⚠️ STATUS: Tomorrow's entry is {len(word_tomorrow)} letters instead of 5: '{word_tomorrow}'")
 
 except FileNotFoundError:
     print("❌ ERROR: Could not find 'words.json'. Make sure you are in the correct directory.")
