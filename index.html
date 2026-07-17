@@ -96,8 +96,8 @@
         #congrats-share-btn:hover { background-color: #4d8646; }
         .share-svg { width: 20px; height: 20px; fill: none; stroke: #ffffff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
-        #show-answer-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
-        #show-answer-btn:hover { background-color: #616466; }
+        #show-answer-btn, #show-puzzle-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; width: 200px; text-align: center; }
+        #show-answer-btn:hover, #show-puzzle-btn:hover { background-color: #616466; }
 
         #share-answer-btn { display: none; background-color: #5c9e54; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 25px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
         #share-answer-btn:hover { background-color: #4d8646; }
@@ -157,6 +157,7 @@
         </svg>
     </button>
     <button id="show-answer-btn" onclick="admirePuzzle()">Show Answer</button>
+    <button id="show-puzzle-btn" onclick="revealEntirePuzzle()">Show Puzzle</button>
 </div>
 
 <div id="game-container">
@@ -481,7 +482,6 @@ function sh() {
     });
 }
 
-// Fixed text-grid implementation with custom bracket letters on the answer row
 function shareAnswer() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n";
@@ -562,6 +562,21 @@ function admirePuzzle() {
 
     clearAnimations(); 
     applyPuzzleMasking();
+    
+    document.getElementById('congrats-screen').style.display = 'none';
+    document.getElementById('game-container').style.display = 'flex';
+    document.getElementById('keys').style.display = 'none'; 
+    document.getElementById('share-answer-btn').style.display = 'block'; 
+    document.getElementById('see-results-btn').style.display = 'block'; 
+}
+
+function revealEntirePuzzle() {
+    var oldBoard = document.getElementById("board");
+    var newBoard = oldBoard.cloneNode(true);
+    oldBoard.parentNode.replaceChild(newBoard, oldBoard);
+
+    clearAnimations(); 
+    removePuzzleMasking(); // Clear any hidden letters so all are visible
     
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
