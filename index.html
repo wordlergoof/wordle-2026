@@ -491,18 +491,21 @@ function shareAnswer() {
         for (let j = 0; j < 5; j++) {
             let tile = document.getElementById("t" + i + j);
             
-            // Replaces the broken unplayed row layout footprint with matching black square widths
             if (!tile || tile.textContent.trim() === "") {
                 rowStr += "⬛"; 
             } else if (isAnswerRow) {
-                // Preserves your bracketed letters which natively line up with the grid perfectly
-                rowStr += "[" + tile.textContent.toUpperCase() + "]";
+                // Adds a space after each bracket group so it spans the exact footprint of an emoji box
+                rowStr += "[" + tile.textContent.toUpperCase() + "] ";
             } else {
                 let status = tile.getAttribute("data-s");
                 if (status === "c") rowStr += "🟩";
                 else if (status === "p") rowStr += "🟨";
                 else rowStr += "⬛";
             }
+        }
+        // Trim trailing space from text rows so line endings stay perfectly crisp
+        if (isAnswerRow) {
+            rowStr = rowStr.trim();
         }
         gridText += rowStr + "\n";
     }
