@@ -9,7 +9,6 @@
         body { background: #e3e3e1; color: #000000; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 5px; overflow-x: hidden; width: 100vw; -webkit-text-size-adjust: 100%; min-height: 100vh; }
         header { font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #d3d6da; width: 100%; text-align: center; padding: 5px 0; margin-bottom: 5px; }
         
-        /* Hide Game Container by default to let the Start Page shine first */
         #game-container { display: none; width: 100%; max-width: 375px; flex-direction: column; align-items: center; }
         
         .tile { 
@@ -26,6 +25,11 @@
             color: #000000;
             transform-style: preserve-3d;
             backface-visibility: list-item;
+        }
+        
+        /* Mask style class applied when admiring puzzle layout arrays */
+        .tile.masked-letter {
+            color: transparent !important;
         }
         
         .row { display: flex; justify-content: center; width: 100%; }
@@ -46,112 +50,32 @@
         #msg { height: 25px; font-weight: bold; color: #6aaa64; text-align: center; font-size: 0.8rem; margin-bottom: 5px; }
         #expired { display: none; text-align: center; margin-top: 50px; font-weight: bold; color: #787c7e; width: 100%; padding: 20px; }
         
-        /* NYT Swivel Animation */
-        .flip {
-            animation: flipTile 0.75s ease-in-out forwards;
-        }
+        .flip { animation: flipTile 0.75s ease-in-out forwards; }
         @keyframes flipTile {
             0% { transform: rotateX(0deg); }
             45% { transform: rotateX(90deg); } 
             100% { transform: rotateX(0deg); }
         }
 
-        /* Beautiful, slow, and gentle fluid glide */
-        .bounce {
-            animation: bounceTile 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-        }
+        .bounce { animation: bounceTile 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards; }
         @keyframes bounceTile {
-            0% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-12px); 
-            }
-            70% {
-                transform: translateY(2px);   
-            }
-            85% {
-                transform: translateY(-1px);  
-            }
-            100% {
-                transform: translateY(0);     
-            }
+            0% { transform: translateY(0); }
+            40% { transform: translateY(-12px); }
+            70% { transform: translateY(2px); }
+            85% { transform: translateY(-1px); }
+            100% { transform: translateY(0); }
         }
 
-        /* NEW: NYT Start Landing Page Styles */
-        #start-page {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            width: 100%;
-            max-width: 500px;
-            padding: 40px 20px;
-            margin-top: auto;
-            margin-bottom: auto;
-            min-height: 80vh;
-        }
-        .start-logo {
-            margin-bottom: 15px;
-        }
-        .start-title {
-            font-family: Georgia, serif;
-            font-size: 3rem;
-            font-weight: bold;
-            color: #000000;
-            margin-bottom: 15px;
-            letter-spacing: -0.5px;
-        }
-        #start-play-btn {
-            background-color: #121213;
-            color: #ffffff;
-            border: none;
-            padding: 14px 60px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            font-family: sans-serif;
-            margin-bottom: 25px;
-            transition: background-color 0.15s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #start-play-btn:hover {
-            background-color: #2f2f31;
-        }
-        .start-subtitle {
-            font-family: Georgia, serif;
-            font-size: 1.6rem;
-            line-height: 1.3;
-            color: #000000;
-            max-width: 320px;
-            margin-bottom: 40px;
-        }
-        .start-date {
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: #000000;
-            margin-bottom: 5px;
-        }
-        .start-number {
-            font-size: 0.9rem;
-            color: #333333;
-        }
+        #start-page { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; max-width: 500px; padding: 40px 20px; margin-top: auto; margin-bottom: auto; min-height: 80vh; }
+        .start-logo { margin-bottom: 15px; }
+        .start-title { font-family: Georgia, serif; font-size: 3rem; font-weight: bold; color: #000000; margin-bottom: 15px; letter-spacing: -0.5px; }
+        #start-play-btn { background-color: #121213; color: #ffffff; border: none; padding: 14px 60px; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; font-family: sans-serif; margin-bottom: 25px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
+        #start-play-btn:hover { background-color: #2f2f31; }
+        .start-subtitle { font-family: Georgia, serif; font-size: 1.6rem; line-height: 1.3; color: #000000; max-width: 320px; margin-bottom: 40px; }
+        .start-date { font-size: 0.95rem; font-weight: bold; color: #000000; margin-bottom: 5px; }
+        .start-number { font-size: 0.9rem; color: #333333; }
 
-        /* NYT Style Welcome Back Overlay Screen CSS */
-        #welcome-back {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            padding: 40px 20px;
-            font-family: Georgia, serif;
-            margin-top: 40px;
-        }
+        #welcome-back { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 400px; text-align: center; padding: 40px 20px; font-family: Georgia, serif; margin-top: 40px; }
         #welcome-back h1 { font-size: 2.5rem; font-weight: 800; margin: 20px 0 10px 0; color: #000000; }
         #welcome-back p { font-size: 1.4rem; color: #000000; margin-bottom: 30px; font-family: sans-serif; }
         #welcome-back button { background-color: #121213; color: #ffffff; border: none; padding: 14px 40px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; transition: background-color 0.2s; }
@@ -161,133 +85,43 @@
         .mini-tile { width: 16px; height: 16px; border: 1.5px solid #121213; }
         .mini-tile.green { background-color: #6aaa64; border-color: #6aaa64; }
 
-        /* Congratulations Page Layout Modifications */
-        #congrats-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 375px;
-            text-align: center;
-            padding: 40px 20px;
-            margin-top: 50px;
-        }
-        #congrats-screen h1 {
-            font-family: Arial, sans-serif; 
-            font-size: 2.3rem;
-            font-weight: 800;
-            margin: 15px 0 40px 0;
-            color: #000000;
-            letter-spacing: -0.5px;
-        }
+        #congrats-screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 375px; text-align: center; padding: 40px 20px; margin-top: 50px; }
+        #congrats-screen h1 { font-family: Arial, sans-serif; font-size: 2.3rem; font-weight: 800; margin: 15px 0 25px 0; color: #000000; letter-spacing: -0.5px; }
         
-        /* Star enclosed inside a soft green badge container */
-        .star-container {
-            width: 58px;
-            height: 58px;
-            background-color: #81b16c;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .star-icon {
-            width: 32px;
-            height: 32px;
-            background-color: #ffffff;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-        }
+        /* Styled container block to render emoji grids on screen */
+        #congrats-emoji-display { font-size: 1.4rem; line-height: 1.5; letter-spacing: 2px; margin-bottom: 35px; white-space: pre; font-family: monospace; }
+        
+        .star-container { width: 58px; height: 58px; background-color: #81b16c; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .star-icon { width: 32px; height: 32px; background-color: #ffffff; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 
-        /* Capsule shaped Share button styling */
-        #congrats-share-btn {
-            background-color: #5c9e54; 
-            color: #ffffff;
-            border: none;
-            padding: 13px 45px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 30px; 
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-family: sans-serif;
-            transition: background-color 0.15s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #congrats-share-btn:hover {
-            background-color: #4d8646;
-        }
-        /* Inline SVG wrapper for the exact structural share path layout nodes */
-        .share-svg {
-            width: 20px;
-            height: 20px;
-            fill: none;
-            stroke: #ffffff;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
+        #congrats-share-btn { background-color: #5c9e54; color: #ffffff; border: none; padding: 13px 35px; font-size: 1.2rem; font-weight: bold; border-radius: 30px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
+        #congrats-share-btn:hover { background-color: #4d8646; }
+        .share-svg { width: 20px; height: 20px; fill: none; stroke: #ffffff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
-        /* Admire Puzzle button */
-        #admire-puzzle-btn {
-            background-color: #787c7e;
-            color: #ffffff;
-            border: none;
-            padding: 11px 35px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            margin-top: 15px;
-            font-family: sans-serif;
-            transition: background-color 0.15s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #admire-puzzle-btn:hover {
-            background-color: #616466;
-        }
+        #admire-puzzle-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
+        #admire-puzzle-btn:hover { background-color: #616466; }
 
-        /* Pill-shaped See Results button */
-        #see-results-btn {
-            display: none; 
-            background-color: #121213;
-            color: #ffffff;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            font-family: sans-serif;
-            margin-top: 25px;
-            transition: background-color 0.15s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #see-results-btn:hover {
-            background-color: #2f2f31;
-        }
+        /* Share Answer and See Results Actions pill design buttons */
+        #share-answer-btn { display: none; background-color: #5c9e54; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 25px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
+        #share-answer-btn:hover { background-color: #4d8646; }
+        
+        #see-results-btn { display: none; background-color: #121213; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 12px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
+        #see-results-btn:hover { background-color: #2f2f31; }
     </style>
 </head>
 <body>
 
-<!-- NEW: Start Landing Page View -->
 <div id="start-page">
     <div class="start-logo">
         <svg width="68" height="68" viewBox="0 0 100 100">
-            <!-- Outlined Rounded Container Grid -->
             <rect x="4" y="4" width="92" height="92" rx="16" fill="none" stroke="#121213" stroke-width="8"/>
-            <!-- Grid Partition Dividers -->
             <line x1="4" y1="34" x2="96" y2="34" stroke="#121213" stroke-width="6"/>
             <line x1="4" y1="66" x2="96" y2="66" stroke="#121213" stroke-width="6"/>
             <line x1="34" y1="4" x2="34" y2="96" stroke="#121213" stroke-width="6"/>
             <line x1="66" y1="4" x2="66" y2="96" stroke="#121213" stroke-width="6"/>
-            <!-- Solid Color Fills to match screenshot layout -->
-            <rect x="37" y="37" width="26" height="26" fill="#c9b458"/> <!-- Yellow center -->
-            <rect x="69" y="37" width="23" height="26" fill="#6aaa64"/> <!-- Green right -->
-            <rect x="37" y="69" width="26" height="23" fill="#6aaa64"/> <!-- Green bottom-center -->
+            <rect x="37" y="37" width="26" height="26" fill="#c9b458"/> 
+            <rect x="69" y="37" width="23" height="26" fill="#6aaa64"/> 
+            <rect x="37" y="69" width="26" height="23" fill="#6aaa64"/> 
         </svg>
     </div>
     <div class="start-title">Wordle</div>
@@ -309,12 +143,16 @@
     <button onclick="resumeGame()">Continue</button>
 </div>
 
-<!-- Isolated layout view content wrapper -->
+<!-- Congratulations layout screen containing injected graphic grids -->
 <div id="congrats-screen">
     <div class="star-container"><div class="star-icon"></div></div>
     <h1>Congratulations!</h1>
+    
+    <!-- Visual pattern display node -->
+    <div id="congrats-emoji-display"></div>
+    
     <button id="congrats-share-btn" onclick="sh()">
-        Share 
+        Share Results 
         <svg class="share-svg" viewBox="0 0 24 24">
             <circle cx="18" cy="5" r="3"></circle>
             <circle cx="6" cy="12" r="3"></circle>
@@ -335,14 +173,16 @@
     <div id="msg"></div>
     
     <div id="board">
-        <div class="row"><div class="tile" id="t00"></div><div class="tile" id="t01"></div><div class="tile" id="t02"></div><div class="tile" id="t03"></div><div class="tile" id="t04"></div></div>
-        <div class="row"><div class="tile" id="t10"></div><div class="tile" id="t11"></div><div class="tile" id="t12"></div><div class="tile" id="t13"></div><div class="tile" id="t14"></div></div>
-        <div class="row"><div class="tile" id="t20"></div><div class="tile" id="t21"></div><div class="tile" id="t22"></div><div class="tile" id="t23"></div><div class="tile" id="t24"></div></div>
-        <div class="row"><div class="tile" id="t30"></div><div class="tile" id="t31"></div><div class="tile" id="t32"></div><div class="tile" id="t33"></div><div class="tile" id="t34"></div></div>
-        <div class="row"><div class="tile" id="t40"></div><div class="tile" id="t41"></div><div class="tile" id="t42"></div><div class="tile" id="t43"></div><div class="tile" id="t44"></div></div>
-        <div class="row"><div class="tile" id="t50"></div><div class="tile" id="t51"></div><div class="tile" id="t52"></div><div class="tile" id="t53"></div><div class="tile" id="t54"></div></div>
+        <div class="row" id="r0"><div class="tile" id="t00"></div><div class="tile" id="t01"></div><div class="tile" id="t02"></div><div class="tile" id="t03"></div><div class="tile" id="t04"></div></div>
+        <div class="row" id="r1"><div class="tile" id="t10"></div><div class="tile" id="t11"></div><div class="tile" id="t12"></div><div class="tile" id="t13"></div><div class="tile" id="t14"></div></div>
+        <div class="row" id="r2"><div class="tile" id="t20"></div><div class="tile" id="t21"></div><div class="tile" id="t22"></div><div class="tile" id="t23"></div><div class="tile" id="t24"></div></div>
+        <div class="row" id="r3"><div class="tile" id="t30"></div><div class="tile" id="t31"></div><div class="tile" id="t32"></div><div class="tile" id="t33"></div><div class="tile" id="t34"></div></div>
+        <div class="row" id="r4"><div class="tile" id="t40"></div><div class="tile" id="t41"></div><div class="tile" id="t42"></div><div class="tile" id="t43"></div><div class="tile" id="t44"></div></div>
+        <div class="row" id="r5"><div class="tile" id="t50"></div><div class="tile" id="t51"></div><div class="tile" id="t52"></div><div class="tile" id="t53"></div><div class="tile" id="t54"></div></div>
     </div>
 
+    <!-- Toggle Action Utilities Buttons Grouping layout -->
+    <button id="share-answer-btn" onclick="shareAnswer()">Share Answer</button>
     <button id="see-results-btn" onclick="seeResults()">See Results</button>
 
     <div id="keys" style="margin-top:10px; width: 100%;">
@@ -373,7 +213,6 @@ async function initGame() {
         const dt = new Date();
         dateKey = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
         
-        // Dynamically build and format the date string on the landing page
         const options = { month: 'long', day: 'numeric', year: 'numeric' };
         document.getElementById("start-date").textContent = dt.toLocaleDateString('en-US', options);
 
@@ -412,9 +251,12 @@ async function initGame() {
             if (done) {
                 document.getElementById('start-page').style.display = 'none';
                 if (win) {
+                    updateCongratsEmojiDisplay();
                     document.getElementById('game-container').style.display = 'flex';
                     document.getElementById('keys').style.display = 'none'; 
+                    document.getElementById('share-answer-btn').style.display = 'block';
                     document.getElementById('see-results-btn').style.display = 'block';
+                    applyPuzzleMasking();
                 } else {
                     document.getElementById('game-container').style.display = 'flex';
                     document.getElementById("msg").textContent = ans;
@@ -431,7 +273,34 @@ async function initGame() {
     }
 }
 
-// Handler for the main start page 'Play' button click
+function updateCongratsEmojiDisplay() {
+    document.getElementById("congrats-emoji-display").textContent = ems.join("\n");
+}
+
+function applyPuzzleMasking() {
+    // Mask all rows except the final row that contains the exact matching answer
+    for (let rowIdx = 0; rowIdx < 6; rowIdx++) {
+        let isAnswerRow = (rowIdx === (r - 1) && win);
+        for (let colIdx = 0; colIdx < 5; colIdx++) {
+            let tile = document.getElementById("t" + rowIdx + colIdx);
+            if (tile && tile.textContent !== "") {
+                if (!isAnswerRow) {
+                    tile.classList.add("masked-letter");
+                } else {
+                    tile.classList.remove("masked-letter");
+                }
+            }
+        }
+    }
+}
+
+function removePuzzleMasking() {
+    const tiles = document.getElementsByClassName("tile");
+    for (let i = 0; i < tiles.length; i++) {
+        tiles[i].classList.remove("masked-letter");
+    }
+}
+
 function startGame() {
     document.getElementById('start-page').style.display = 'none';
     if (hasSavedState) {
@@ -453,6 +322,7 @@ function saveGameState() {
     for (let i = 0; i < savedTiles.length; i++) {
         savedTiles[i].classList.remove("flip");
         savedTiles[i].classList.remove("bounce");
+        savedTiles[i].classList.remove("masked-letter");
     }
 
     const state = {
@@ -572,11 +442,8 @@ function ch() {
             }
 
             setTimeout(() => {
-                const tiles = document.getElementsByClassName("tile");
-                for (let i = 0; i < tiles.length; i++) {
-                    tiles[i].classList.remove("flip");
-                    tiles[i].classList.remove("bounce");
-                }
+                removePuzzleMasking();
+                updateCongratsEmojiDisplay();
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
                 saveGameState();
@@ -609,37 +476,64 @@ function showMsg(m) {
     }, 2000);
 }
 
+// Copy matrix block blocks array pattern to clipboard
 function sh() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
     navigator.clipboard.writeText(text).then(() => {
-        if(document.getElementById('congrats-screen').style.display === 'flex') {
-            var btn = document.getElementById("congrats-share-btn");
-            var originalHtml = btn.innerHTML;
-            btn.innerHTML = 'Copied! 📋';
-            setTimeout(() => {
-                btn.innerHTML = originalHtml;
-            }, 2000);
+        var btn = document.getElementById("congrats-share-btn");
+        var originalHtml = btn.innerHTML;
+        btn.innerHTML = 'Copied Result! 📋';
+        setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
+    });
+}
+
+// Copies text layout matrix configuration grids containing letters
+function shareAnswer() {
+    var scoreText = win ? r : "X";
+    var gridText = "";
+    
+    for (let i = 0; i < 6; i++) {
+        let rowStr = "";
+        let hasLetters = false;
+        for (let j = 0; j < 5; j++) {
+            let tile = document.getElementById("t" + i + j);
+            if (tile && tile.textContent !== "") {
+                rowStr += "[" + tile.textContent + "]";
+                hasLetters = true;
+            } else {
+                rowStr += "[ ]";
+            }
         }
+        if (hasLetters) {
+            gridText += rowStr + "\n";
+        }
+    }
+
+    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\nAnswer: " + ans + "\n\n" + gridText;
+    navigator.clipboard.writeText(text).then(() => {
+        var btn = document.getElementById("share-answer-btn");
+        var originalText = btn.textContent;
+        btn.textContent = 'Answer Copied! 📋';
+        setTimeout(() => { btn.textContent = originalText; }, 2000);
     });
 }
 
 function admirePuzzle() {
-    const tiles = document.getElementsByClassName("tile");
-    for (let i = 0; i < tiles.length; i++) {
-        tiles[i].classList.remove("flip");
-        tiles[i].classList.remove("bounce");
-    }
-    
+    applyPuzzleMasking();
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
     document.getElementById('keys').style.display = 'none'; 
+    document.getElementById('share-answer-btn').style.display = 'block'; 
     document.getElementById('see-results-btn').style.display = 'block'; 
 }
 
 function seeResults() {
+    removePuzzleMasking();
+    updateCongratsEmojiDisplay();
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('congrats-screen').style.display = 'flex';
+    document.getElementById('share-answer-btn').style.display = 'none'; 
     document.getElementById('see-results-btn').style.display = 'none'; 
 }
 
