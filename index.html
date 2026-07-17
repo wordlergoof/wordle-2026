@@ -268,11 +268,7 @@ function updateCongratsEmojiDisplay() {
 }
 
 function clearAnimations() {
-    // Completely clear out animations by resetting the node elements to scrub lingering transitions
-    var oldBoard = document.getElementById("board");
-    var newBoard = oldBoard.cloneNode(true);
-    oldBoard.parentNode.replaceChild(newBoard, oldBoard);
-    
+    // Clear out active layout properties to stop visual transition looping bugs
     const tiles = document.getElementsByClassName("tile");
     for (let i = 0; i < tiles.length; i++) {
         tiles[i].classList.remove("flip");
@@ -281,6 +277,7 @@ function clearAnimations() {
 }
 
 function applyPuzzleMasking() {
+    // Letters in the non-winning rows get hidden, while the true winning answer row keeps its text visible
     for (let rowIdx = 0; rowIdx < 6; rowIdx++) {
         let isAnswerRow = (rowIdx === (r - 1) && win);
         for (let colIdx = 0; colIdx < 5; colIdx++) {
@@ -526,8 +523,14 @@ function shareAnswer() {
 }
 
 function admirePuzzle() {
+    // Strips out classes from old elements manually right before setting display styles
+    var oldBoard = document.getElementById("board");
+    var newBoard = oldBoard.cloneNode(true);
+    oldBoard.parentNode.replaceChild(newBoard, oldBoard);
+
     clearAnimations(); 
     applyPuzzleMasking();
+    
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
     document.getElementById('keys').style.display = 'none'; 
