@@ -197,13 +197,6 @@ var todayData = {};
 var dateKey = "";   
 var hasSavedState = false;
 
-// Regional Indicator Emojis mapped dynamically to provide clean alignment
-const letterEmojis = {
-    'A': '🇦', 'B': '🇧', 'C': '🇨', 'D': '🇩', 'E': '🇪', 'F': '🇫', 'G': '🇬', 'H': '🇭', 'I': '🇮', 
-    'J': '🇯', 'K': '🇰', 'L': '🇱', 'M': '🇲', 'N': '🇳', 'O': '🇴', 'P': '🇵', 'Q': '🇶', 'R': '🇷', 
-    'S': '🇸', 'T': '🇹', 'U': '🇺', 'V': '🇻', 'W': '🇼', 'X': '🇽', 'Y': '🇾', 'Z': '🇿'
-};
-
 async function initGame() {
     try {
         const response = await fetch('words.json?v=' + new Date().getTime());
@@ -498,13 +491,12 @@ function shareAnswer() {
         for (let j = 0; j < 5; j++) {
             let tile = document.getElementById("t" + i + j);
             
-            // Unused/Empty rows completely outside active board grid
+            // Replaces the broken unplayed row layout footprint with matching black square widths
             if (!tile || tile.textContent.trim() === "") {
-                rowStr += "⬜"; 
+                rowStr += "⬛"; 
             } else if (isAnswerRow) {
-                // Transforms raw characters to standard regional indicator emojis for exact 1-to-1 pixel layout width
-                let char = tile.textContent.toUpperCase();
-                rowStr += letterEmojis[char] || "⬜";
+                // Preserves your bracketed letters which natively line up with the grid perfectly
+                rowStr += "[" + tile.textContent.toUpperCase() + "]";
             } else {
                 let status = tile.getAttribute("data-s");
                 if (status === "c") rowStr += "🟩";
