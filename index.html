@@ -27,7 +27,6 @@
             backface-visibility: list-item;
         }
         
-        /* Mask style class applied when admiring puzzle layout arrays */
         .tile.masked-letter {
             color: transparent !important;
         }
@@ -188,7 +187,6 @@
 </div>
 <div id="expired"><h1>Wordle</h1><p>You have already played today's game!</p></div>
 <script>
-// --- 1. Global Variables ---
 var r = 0, c = 0, g = "", done = false, win = false;
 var greens = [null,null,null,null,null];
 var yellows = [];
@@ -199,7 +197,13 @@ var todayData = {};
 var dateKey = "";   
 var hasSavedState = false;
 
-// --- 2. Asynchronous Initialization ---
+// Regional Indicator Emojis mapped dynamically to provide clean alignment
+const letterEmojis = {
+    'A': '🇦', 'B': '🇧', 'C': '🇨', 'D': '🇩', 'E': '🇪', 'F': '🇫', 'G': '🇬', 'H': '🇭', 'I': '🇮', 
+    'J': '🇯', 'K': '🇰', 'L': '🇱', 'M': '🇲', 'N': '🇳', 'O': '🇴', 'P': '🇵', 'Q': '🇶', 'R': '🇷', 
+    'S': '🇸', 'T': '🇹', 'U': '🇺', 'V': '🇻', 'W': '🇼', 'X': '🇽', 'Y': '🇾', 'Z': '🇿'
+};
+
 async function initGame() {
     try {
         const response = await fetch('words.json?v=' + new Date().getTime());
@@ -336,7 +340,6 @@ function saveGameState() {
     localStorage.setItem('wordle_current_state_' + dateKey, JSON.stringify(state));
 }
 
-// --- 3. Game Logic Functions ---
 function pr(l) {
     if (done) return;
     if (l == "ENTER") {
@@ -473,7 +476,6 @@ function showMsg(m) {
     }, 2000);
 }
 
-// Main share method from the Congratulations screen
 function sh() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
@@ -485,7 +487,6 @@ function sh() {
     });
 }
 
-// Custom share method to strictly copy the 6-row layout grid layout "as-is"
 function shareAnswer() {
     var scoreText = win ? r : "X";
     var gridText = "";
@@ -497,11 +498,13 @@ function shareAnswer() {
         for (let j = 0; j < 5; j++) {
             let tile = document.getElementById("t" + i + j);
             
-            // If the tile is completely empty (like the 6th row in your screenshot)
-            if (!tile || tile.textContent === "") {
+            // Unused/Empty rows completely outside active board grid
+            if (!tile || tile.textContent.trim() === "") {
                 rowStr += "⬜"; 
             } else if (isAnswerRow) {
-                rowStr += "[" + tile.textContent + "]";
+                // Transforms raw characters to standard regional indicator emojis for exact 1-to-1 pixel layout width
+                let char = tile.textContent.toUpperCase();
+                rowStr += letterEmojis[char] || "⬜";
             } else {
                 let status = tile.getAttribute("data-s");
                 if (status === "c") rowStr += "🟩";
