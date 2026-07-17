@@ -182,7 +182,7 @@
     <div id="keys" style="margin-top:10px; width: 100%;">
         <div class="kb-row"><div class="key" onclick="pr('Q')">Q</div><div class="key" onclick="pr('W')">W</div><div class="key" onclick="pr('E')">E</div><div class="key" onclick="pr('R')">R</div><div class="key" onclick="pr('T')">T</div><div class="key" onclick="pr('Y')">Y</div><div class="key" onclick="pr('U')">U</div><div class="key" onclick="pr('I')">I</div><div class="key" onclick="pr('O')">O</div><div class="key" onclick="pr('P')">P</div></div>
         <div class="kb-row"><div class="key" onclick="pr('A')">A</div><div class="key" onclick="pr('S')">S</div><div class="key" onclick="pr('D')">D</div><div class="key" onclick="pr('F')">F</div><div class="key" onclick="pr('G')">G</div><div class="key" onclick="pr('H')">H</div><div class="key" onclick="pr('J')">J</div><div class="key" onclick="pr('K')">K</div><div class="key" onclick="pr('L')">L</div></div>
-        <div class="kb-row"><div class="key wide" onclick="pr('ENTER')">ENTER</div><div class="key" onclick="pr('Z')">Z</div><div class="key" onclick="pr('X')">X</div><div class="key" onclick="pr('C')">C</div><div class="key" onclick="pr('V')">V</div><div class="key" onclick="pr('B')">B</div><div class="key" onclick="pr('N')">N</div><div class="key" onclick="pr('M')">M</div><div class="key wide" onclick="pr('DEL')">DEL</div></div>
+        <div class="kb-row"><div class="key wide" onclick="pr('ENTER')">ENTER</div><div class="key" onclick="pr('Z')">Z</div><div class="key" onclick="pr('X')">X</div><div class="key" onclick="pr('C')">C</div><div class="key" onclick="pr('V')">V</div><div class="key" onclick="b('B')">B</div><div class="key" onclick="pr('N')">N</div><div class="key" onclick="pr('M')">M</div><div class="key wide" onclick="pr('DEL')">DEL</div></div>
     </div>
 </div>
 <div id="expired"><h1>Wordle</h1><p>You have already played today's game!</p></div>
@@ -483,7 +483,7 @@ function sh() {
     });
 }
 
-// Fixed function: Uses a direct synchronous execution approach to satisfy Safari's strict clipboard requirements
+// Fixed function: Generates full image canvas, with a foolproof direct text backup for strict Safari compliance
 function shareAnswer() {
     const canvas = document.getElementById("share-canvas");
     const ctx = canvas.getContext("2d");
@@ -552,33 +552,67 @@ function shareAnswer() {
         }
     }
 
-    // Convert to a dataURL synchronously so Safari immediately recognizes it as user-triggered
-    const dataURL = canvas.toDataURL("image/png");
-    
-    // Convert dataURL to standard binary Blob layout
-    const byteString = atob(dataURL.split(',')[1]);
-    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    const imageBlob = new Blob([ab], { type: mimeString });
+    // Set up text fallback upfront
+    var fallbackText = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
 
-    // Instantly commit item stream right to clipboard
     try {
+        // Run conversion synchronously inside click event cycle
+        const dataURL = canvas.toDataURL("image/png");
+        const byteString = atob(dataURL.split(',')[1]);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        const imageBlob = new Blob([ab], { type: "image/png" });
         const item = new ClipboardItem({ "image/png": imageBlob });
+
+        // Attempt image copy
         navigator.clipboard.write([item]).then(() => {
-            var btn = document.getElementById("share-answer-btn");
-            var originalText = btn.textContent;
-            btn.textContent = 'Copied! 📋';
-            setTimeout(() => { btn.textContent = originalText; }, 2000);
+            triggerSuccessMessage('Copied Image! 🖼️');
         }).catch(err => {
-            console.error("Clipboard target write failure: ", err);
+            console.log("Image blocked, utilizing text fallback...");
+            fallbackToText(fallbackText);
         });
     } catch (e) {
-        console.error("Clipboard initialization failure: ", e);
+        console.log("Canvas parsing failed, running text fallback...");
+        fallbackToText(fallbackText);
     }
+}
+
+function fallbackToText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            triggerSuccessMessage('Copied! 📋');
+        }).catch(() => {
+            oldSchoolCopy(text);
+        });
+    } else {
+        oldSchoolCopy(text);
+    }
+}
+
+function oldSchoolCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed"; 
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        triggerSuccessMessage('Copied! 📋');
+    } catch (err) {
+        alert('Unable to copy results automatically.');
+    }
+    document.body.removeChild(textArea);
+}
+
+function triggerSuccessMessage(msgText) {
+    var btn = document.getElementById("share-answer-btn");
+    var originalText = btn.textContent;
+    btn.textContent = msgText;
+    setTimeout(() => { btn.textContent = originalText; }, 2000);
 }
 
 function admirePuzzle() {
