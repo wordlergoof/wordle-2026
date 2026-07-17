@@ -483,15 +483,14 @@ function sh() {
 }
 
 function shareAnswer() {
-    var scoreText = win ? r : "X";
+    var scoreText = win ? (r - 1) : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n";
     
     for (let i = 0; i < ems.length; i++) {
-        if (i === (r - 1) && win) {
+        if (win && i === (r - 1)) {
             let letterRow = "";
-            for (let j = 0; j < 5; j++) {
-                let tile = document.getElementById("t" + i + j);
-                letterRow += "[" + (tile ? tile.textContent.toUpperCase() : "") + "]";
+            for (let char of ans) {
+                letterRow += "[" + char.toUpperCase() + "]";
             }
             text += letterRow + "\n";
         } else {
