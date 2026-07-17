@@ -88,7 +88,6 @@
         #congrats-screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 375px; text-align: center; padding: 40px 20px; margin-top: 50px; }
         #congrats-screen h1 { font-family: Arial, sans-serif; font-size: 2.3rem; font-weight: 800; margin: 15px 0 25px 0; color: #000000; letter-spacing: -0.5px; }
         
-        /* Styled container block to render emoji grids on screen */
         #congrats-emoji-display { font-size: 1.4rem; line-height: 1.5; letter-spacing: 2px; margin-bottom: 35px; white-space: pre; font-family: monospace; }
         
         .star-container { width: 58px; height: 58px; background-color: #81b16c; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
@@ -101,7 +100,6 @@
         #admire-puzzle-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
         #admire-puzzle-btn:hover { background-color: #616466; }
 
-        /* Share Answer and See Results Actions pill design buttons */
         #share-answer-btn { display: none; background-color: #5c9e54; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 25px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
         #share-answer-btn:hover { background-color: #4d8646; }
         
@@ -143,12 +141,10 @@
     <button onclick="resumeGame()">Continue</button>
 </div>
 
-<!-- Congratulations layout screen containing injected graphic grids -->
 <div id="congrats-screen">
     <div class="star-container"><div class="star-icon"></div></div>
     <h1>Congratulations!</h1>
     
-    <!-- Visual pattern display node -->
     <div id="congrats-emoji-display"></div>
     
     <button id="congrats-share-btn" onclick="sh()">
@@ -181,7 +177,6 @@
         <div class="row" id="r5"><div class="tile" id="t50"></div><div class="tile" id="t51"></div><div class="tile" id="t52"></div><div class="tile" id="t53"></div><div class="tile" id="t54"></div></div>
     </div>
 
-    <!-- Toggle Action Utilities Buttons Grouping layout -->
     <button id="share-answer-btn" onclick="shareAnswer()">Share Answer</button>
     <button id="see-results-btn" onclick="seeResults()">See Results</button>
 
@@ -241,12 +236,7 @@ async function initGame() {
             ems = state.ems;
             
             document.getElementById("board").innerHTML = state.boardHtml;
-
-            const tiles = document.getElementsByClassName("tile");
-            for (let i = 0; i < tiles.length; i++) {
-                tiles[i].classList.remove("flip");
-                tiles[i].classList.remove("bounce");
-            }
+            clearAnimations();
 
             if (done) {
                 document.getElementById('start-page').style.display = 'none';
@@ -277,8 +267,15 @@ function updateCongratsEmojiDisplay() {
     document.getElementById("congrats-emoji-display").textContent = ems.join("\n");
 }
 
+function clearAnimations() {
+    const tiles = document.getElementsByClassName("tile");
+    for (let i = 0; i < tiles.length; i++) {
+        tiles[i].classList.remove("flip");
+        tiles[i].classList.remove("bounce");
+    }
+}
+
 function applyPuzzleMasking() {
-    // Mask all rows except the final row that contains the exact matching answer
     for (let rowIdx = 0; rowIdx < 6; rowIdx++) {
         let isAnswerRow = (rowIdx === (r - 1) && win);
         for (let colIdx = 0; colIdx < 5; colIdx++) {
@@ -402,10 +399,7 @@ function ch() {
     var currentGuess = g;
     var currentRow = r;
 
-    for (let i = 0; i < 5; i++) {
-        rowTiles[i].classList.remove("flip");
-        rowTiles[i].classList.remove("bounce");
-    }
+    clearAnimations();
 
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
@@ -442,7 +436,7 @@ function ch() {
             }
 
             setTimeout(() => {
-                removePuzzleMasking();
+                clearAnimations();
                 updateCongratsEmojiDisplay();
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
@@ -476,7 +470,6 @@ function showMsg(m) {
     }, 2000);
 }
 
-// Copy matrix block blocks array pattern to clipboard
 function sh() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
@@ -488,7 +481,7 @@ function sh() {
     });
 }
 
-// Copies text layout matrix configuration grids containing letters
+// Copies the board as it looks on screen: emojis for guesses, letter blocks for the answer row
 function shareAnswer() {
     var scoreText = win ? r : "X";
     var gridText = "";
@@ -496,13 +489,21 @@ function shareAnswer() {
     for (let i = 0; i < 6; i++) {
         let rowStr = "";
         let hasLetters = false;
+        let isAnswerRow = (i === (r - 1) && win);
+        
         for (let j = 0; j < 5; j++) {
             let tile = document.getElementById("t" + i + j);
             if (tile && tile.textContent !== "") {
-                rowStr += "[" + tile.textContent + "]";
                 hasLetters = true;
-            } else {
-                rowStr += "[ ]";
+                if (isAnswerRow) {
+                    rowStr += "[" + tile.textContent + "]";
+                } else {
+                    // Pull the structural status attribute to resolve the accurate colored box block emoji
+                    let status = tile.getAttribute("data-s");
+                    if (status === "c") rowStr += "🟩";
+                    else if (status === "p") rowStr += "🟨";
+                    else rowStr += "⬛";
+                }
             }
         }
         if (hasLetters) {
@@ -510,7 +511,7 @@ function shareAnswer() {
         }
     }
 
-    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\nAnswer: " + ans + "\n\n" + gridText;
+    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + gridText;
     navigator.clipboard.writeText(text).then(() => {
         var btn = document.getElementById("share-answer-btn");
         var originalText = btn.textContent;
@@ -520,6 +521,7 @@ function shareAnswer() {
 }
 
 function admirePuzzle() {
+    clearAnimations(); // Prevent layout flash triggers
     applyPuzzleMasking();
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
@@ -529,6 +531,7 @@ function admirePuzzle() {
 }
 
 function seeResults() {
+    clearAnimations();
     removePuzzleMasking();
     updateCongratsEmojiDisplay();
     document.getElementById('game-container').style.display = 'none';
