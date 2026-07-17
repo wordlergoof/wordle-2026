@@ -187,8 +187,6 @@
 </div>
 <div id="expired"><h1>Wordle</h1><p>You have already played today's game!</p></div>
 
-<canvas id="share-canvas" style="display:none;"></canvas>
-
 <script>
 var r = 0, c = 0, g = "", done = false, win = false;
 var greens = [null,null,null,null,null];
@@ -483,100 +481,42 @@ function sh() {
     });
 }
 
-// Fixed function: Generates full image canvas, with a foolproof direct text backup for strict Safari compliance
+// Fixed text-grid implementation with custom bracket letters on the answer row
 function shareAnswer() {
-    const canvas = document.getElementById("share-canvas");
-    const ctx = canvas.getContext("2d");
-
-    const width = 430;
-    const height = 550;
-    canvas.width = width;
-    canvas.height = height;
-
-    // Background Render
-    ctx.fillStyle = "#e3e3e1";
-    ctx.fillRect(0, 0, width, height);
-
-    // Header Details
-    ctx.fillStyle = "#000000";
-    ctx.font = "bold 32px sans-serif";
-    ctx.textAlign = "center";
     var scoreText = win ? r : "X";
-    ctx.fillText("Wordle #" + todayData.num + " " + scoreText + "/6", width / 2, 55);
-
-    // Build the grid representation
-    const tileSize = 66;
-    const tileSpacing = 8;
-    const startX = (width - (5 * tileSize + 4 * tileSpacing)) / 2;
-    const startY = 100;
-
-    for (let i = 0; i < 6; i++) {
+    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n";
+    
+    for (let i = 0; i < ems.length; i++) {
         let isAnswerRow = (i === (r - 1) && win);
-        for (let j = 0; j < 5; j++) {
-            let tile = document.getElementById("t" + i + j);
-            let x = startX + j * (tileSize + tileSpacing);
-            let y = startY + i * (tileSize + tileSpacing);
-
-            let bgStyle = "#d3d6da"; 
-            let strokeStyle = null;
-            let letter = "";
-
-            if (tile && tile.textContent.trim() !== "") {
-                let status = tile.getAttribute("data-s");
-                letter = tile.textContent.toUpperCase();
-
-                if (status === "c") bgStyle = "#6aaa64";
-                else if (status === "p") bgStyle = "#c9b458";
-                else bgStyle = "#787c7e";
-            } else {
-                bgStyle = "#e3e3e1";
-                strokeStyle = "#d3d6da";
+        
+        if (isAnswerRow) {
+            let letterRow = "";
+            for (let j = 0; j < 5; j++) {
+                let tile = document.getElementById("t" + i + j);
+                let letter = tile ? tile.textContent.toUpperCase() : "";
+                letterRow += "[" + letter + "]";
             }
-
-            ctx.fillStyle = bgStyle;
-            ctx.fillRect(x, y, tileSize, tileSize);
-
-            if (strokeStyle) {
-                ctx.strokeStyle = strokeStyle;
-                ctx.lineWidth = 3;
-                ctx.strokeRect(x + 1.5, y + 1.5, tileSize - 3, tileSize - 3);
+            text += letterRow + "\n";
+        } else {
+            let rowEmojis = Array.from(ems[i]); 
+            let maskRow = "";
+            for (let j = 0; j < 5; j++) {
+                if (rowEmojis[j] === "🟩") maskRow += "🟩";
+                else if (rowEmojis[j] === "🟨") maskRow += "🟨";
+                else maskRow += "⬛";
             }
-
-            if (isAnswerRow && letter !== "") {
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "bold 34px sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(letter, x + tileSize / 2, y + tileSize / 2 + 2);
-            }
+            text += maskRow + "\n";
         }
     }
 
-    // Set up text fallback upfront
-    var fallbackText = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
-
-    try {
-        // Run conversion synchronously inside click event cycle
-        const dataURL = canvas.toDataURL("image/png");
-        const byteString = atob(dataURL.split(',')[1]);
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        const imageBlob = new Blob([ab], { type: "image/png" });
-        const item = new ClipboardItem({ "image/png": imageBlob });
-
-        // Attempt image copy
-        navigator.clipboard.write([item]).then(() => {
-            triggerSuccessMessage('Copied Image! 🖼️');
-        }).catch(err => {
-            console.log("Image blocked, utilizing text fallback...");
-            fallbackToText(fallbackText);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            triggerSuccessMessage('Copied! 📋');
+        }).catch(() => {
+            oldSchoolCopy(text);
         });
-    } catch (e) {
-        console.log("Canvas parsing failed, running text fallback...");
-        fallbackToText(fallbackText);
+    } else {
+        oldSchoolCopy(text);
     }
 }
 
