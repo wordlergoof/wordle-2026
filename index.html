@@ -187,7 +187,6 @@
 </div>
 <div id="expired"><h1>Wordle</h1><p>You have already played today's game!</p></div>
 
-<!-- Invisible canvas element used to draw the exact visual grid for sharing -->
 <canvas id="share-canvas" style="display:none;"></canvas>
 
 <script>
@@ -484,29 +483,28 @@ function sh() {
     });
 }
 
-// Generates and copies a precise PNG image representation of the game grid directly to your clipboard
+// Fixed function: Uses a direct synchronous execution approach to satisfy Safari's strict clipboard requirements
 function shareAnswer() {
     const canvas = document.getElementById("share-canvas");
     const ctx = canvas.getContext("2d");
 
-    // Set high resolution image canvas matching standard sharing scales
     const width = 430;
     const height = 550;
     canvas.width = width;
     canvas.height = height;
 
-    // Background Match
+    // Background Render
     ctx.fillStyle = "#e3e3e1";
     ctx.fillRect(0, 0, width, height);
 
-    // Title Text
+    // Header Details
     ctx.fillStyle = "#000000";
     ctx.font = "bold 32px sans-serif";
     ctx.textAlign = "center";
     var scoreText = win ? r : "X";
     ctx.fillText("Wordle #" + todayData.num + " " + scoreText + "/6", width / 2, 55);
 
-    // Grid Specs
+    // Build the grid representation
     const tileSize = 66;
     const tileSpacing = 8;
     const startX = (width - (5 * tileSize + 4 * tileSpacing)) / 2;
@@ -531,12 +529,10 @@ function shareAnswer() {
                 else if (status === "p") bgStyle = "#c9b458";
                 else bgStyle = "#787c7e";
             } else {
-                // Empty bottom row outline match
                 bgStyle = "#e3e3e1";
                 strokeStyle = "#d3d6da";
             }
 
-            // Fill Tile Base Color
             ctx.fillStyle = bgStyle;
             ctx.fillRect(x, y, tileSize, tileSize);
 
@@ -546,7 +542,6 @@ function shareAnswer() {
                 ctx.strokeRect(x + 1.5, y + 1.5, tileSize - 3, tileSize - 3);
             }
 
-            // Text overlay generation solely on the winning answer row
             if (isAnswerRow && letter !== "") {
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "bold 34px sans-serif";
@@ -557,18 +552,33 @@ function shareAnswer() {
         }
     }
 
-    // Convert canvas output stream directly to PNG Blob and write onto the device Clipboard
-    canvas.toBlob((blob) => {
-        const item = new ClipboardItem({ "image/png": blob });
+    // Convert to a dataURL synchronously so Safari immediately recognizes it as user-triggered
+    const dataURL = canvas.toDataURL("image/png");
+    
+    // Convert dataURL to standard binary Blob layout
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    const imageBlob = new Blob([ab], { type: mimeString });
+
+    // Instantly commit item stream right to clipboard
+    try {
+        const item = new ClipboardItem({ "image/png": imageBlob });
         navigator.clipboard.write([item]).then(() => {
             var btn = document.getElementById("share-answer-btn");
             var originalText = btn.textContent;
-            btn.textContent = 'Answer Image Copied! 📋';
+            btn.textContent = 'Copied! 📋';
             setTimeout(() => { btn.textContent = originalText; }, 2000);
         }).catch(err => {
-            console.error("Image copy fallback failure: ", err);
+            console.error("Clipboard target write failure: ", err);
         });
-    }, "image/png");
+    } catch (e) {
+        console.error("Clipboard initialization failure: ", e);
+    }
 }
 
 function admirePuzzle() {
