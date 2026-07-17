@@ -485,33 +485,31 @@ function sh() {
     });
 }
 
-// Custom share method to strictly mirror the visual screen output "as-is"
+// Custom share method to strictly copy the 6-row layout grid layout "as-is"
 function shareAnswer() {
     var scoreText = win ? r : "X";
     var gridText = "";
     
     for (let i = 0; i < 6; i++) {
         let rowStr = "";
-        let hasLetters = false;
         let isAnswerRow = (i === (r - 1) && win);
         
         for (let j = 0; j < 5; j++) {
             let tile = document.getElementById("t" + i + j);
-            if (tile && tile.textContent !== "") {
-                hasLetters = true;
-                if (isAnswerRow) {
-                    rowStr += "[" + tile.textContent + "]";
-                } else {
-                    let status = tile.getAttribute("data-s");
-                    if (status === "c") rowStr += "🟩";
-                    else if (status === "p") rowStr += "🟨";
-                    else rowStr += "⬛";
-                }
+            
+            // If the tile is completely empty (like the 6th row in your screenshot)
+            if (!tile || tile.textContent === "") {
+                rowStr += "⬜"; 
+            } else if (isAnswerRow) {
+                rowStr += "[" + tile.textContent + "]";
+            } else {
+                let status = tile.getAttribute("data-s");
+                if (status === "c") rowStr += "🟩";
+                else if (status === "p") rowStr += "🟨";
+                else rowStr += "⬛";
             }
         }
-        if (hasLetters) {
-            gridText += rowStr + "\n";
-        }
+        gridText += rowStr + "\n";
     }
 
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + gridText;
