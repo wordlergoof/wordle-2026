@@ -34,7 +34,6 @@
     <header id="puzNum"></header>
     <div id="msg"></div>
     <div id="board">
-        <!-- Rows 0-5 as defined previously -->
         <div class="row" id="r0"><div class="tile" id="t00"></div><div class="tile" id="t01"></div><div class="tile" id="t02"></div><div class="tile" id="t03"></div><div class="tile" id="t04"></div></div>
         <div class="row" id="r1"><div class="tile" id="t10"></div><div class="tile" id="t11"></div><div class="tile" id="t12"></div><div class="tile" id="t13"></div><div class="tile" id="t14"></div></div>
         <div class="row" id="r2"><div class="tile" id="t20"></div><div class="tile" id="t21"></div><div class="tile" id="t22"></div><div class="tile" id="t23"></div><div class="tile" id="t24"></div></div>
@@ -46,23 +45,24 @@
 </div>
 
 <script>
-// ... [Existing game state variables r, c, g, done, win, ems, ans] ...
+// ... [Existing initialization and game logic remains the same] ...
 
 function shareAnswer() {
     var scoreText = win ? (r - 1) : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n";
     
-    for (let i = 0; i < ems.length; i++) {
-        // Logic: Mask previous turns, reveal only the winning row
-        if (win && i === (r - 1)) {
-            let letterRow = "";
-            for (let char of ans) {
-                letterRow += "[" + char.toUpperCase() + "]";
-            }
-            text += letterRow + "\n";
-        } else {
-            text += "⬛⬛⬛⬛⬛\n";
+    // Mask all rows except the winning one
+    for (let i = 0; i < (r - 1); i++) {
+        text += "⬛⬛⬛⬛⬛\n";
+    }
+    
+    // Explicitly add the winning word letters
+    if (win) {
+        let letterRow = "";
+        for (let char of ans) {
+            letterRow += "[" + char.toUpperCase() + "]";
         }
+        text += letterRow + "\n";
     }
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
