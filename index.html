@@ -102,8 +102,8 @@
         #share-answer-btn { display: none; background-color: #5c9e54; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 25px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
         #share-answer-btn:hover { background-color: #4d8646; }
         
-        #see-results-btn { display: none; background-color: #121213; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 12px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
-        #see-results-btn:hover { background-color: #2f2f31; }
+        #go-back-btn { display: none; background-color: #121213; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 12px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
+        #go-back-btn:hover { background-color: #2f2f31; }
     </style>
 </head>
 <body>
@@ -178,7 +178,7 @@
     </div>
 
     <button id="share-answer-btn" onclick="shareAnswer()">Share Answer</button>
-    <button id="see-results-btn" onclick="seeResults()">See Results</button>
+    <button id="go-back-btn" onclick="goBackToResults()">Go Back</button>
 
     <div id="keys" style="margin-top:10px; width: 100%;">
         <div class="kb-row"><div class="key" onclick="pr('Q')">Q</div><div class="key" onclick="pr('W')">W</div><div class="key" onclick="pr('E')">E</div><div class="key" onclick="pr('R')">R</div><div class="key" onclick="pr('T')">T</div><div class="key" onclick="pr('Y')">Y</div><div class="key" onclick="pr('U')">U</div><div class="key" onclick="pr('I')">I</div><div class="key" onclick="pr('O')">O</div><div class="key" onclick="pr('P')">P</div></div>
@@ -244,7 +244,7 @@ async function initGame() {
                     document.getElementById('game-container').style.display = 'flex';
                     document.getElementById('keys').style.display = 'none'; 
                     document.getElementById('share-answer-btn').style.display = 'block';
-                    document.getElementById('see-results-btn').style.display = 'block';
+                    document.getElementById('go-back-btn').style.display = 'block';
                     applyPuzzleMasking();
                 } else {
                     document.getElementById('game-container').style.display = 'flex';
@@ -567,7 +567,7 @@ function admirePuzzle() {
     document.getElementById('game-container').style.display = 'flex';
     document.getElementById('keys').style.display = 'none'; 
     document.getElementById('share-answer-btn').style.display = 'block'; 
-    document.getElementById('see-results-btn').style.display = 'block'; 
+    document.getElementById('go-back-btn').style.display = 'block'; 
 }
 
 function revealEntirePuzzle() {
@@ -576,23 +576,23 @@ function revealEntirePuzzle() {
     oldBoard.parentNode.replaceChild(newBoard, oldBoard);
 
     clearAnimations(); 
-    removePuzzleMasking(); // Clear any hidden letters so all are visible
+    removePuzzleMasking();
     
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
     document.getElementById('keys').style.display = 'none'; 
     document.getElementById('share-answer-btn').style.display = 'block'; 
-    document.getElementById('see-results-btn').style.display = 'block'; 
+    document.getElementById('go-back-btn').style.display = 'block'; 
 }
 
-function seeResults() {
+function goBackToResults() {
     clearAnimations();
     removePuzzleMasking();
     updateCongratsEmojiDisplay();
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('congrats-screen').style.display = 'flex';
     document.getElementById('share-answer-btn').style.display = 'none'; 
-    document.getElementById('see-results-btn').style.display = 'none'; 
+    document.getElementById('go-back-btn').style.display = 'none'; 
 }
 
 initGame();
