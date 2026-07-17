@@ -186,6 +186,10 @@
     </div>
 </div>
 <div id="expired"><h1>Wordle</h1><p>You have already played today's game!</p></div>
+
+<!-- Invisible canvas element used to draw the exact visual grid for sharing -->
+<canvas id="share-canvas" style="display:none;"></canvas>
+
 <script>
 var r = 0, c = 0, g = "", done = false, win = false;
 var greens = [null,null,null,null,null];
@@ -480,43 +484,91 @@ function sh() {
     });
 }
 
+// Generates and copies a precise PNG image representation of the game grid directly to your clipboard
 function shareAnswer() {
+    const canvas = document.getElementById("share-canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set high resolution image canvas matching standard sharing scales
+    const width = 430;
+    const height = 550;
+    canvas.width = width;
+    canvas.height = height;
+
+    // Background Match
+    ctx.fillStyle = "#e3e3e1";
+    ctx.fillRect(0, 0, width, height);
+
+    // Title Text
+    ctx.fillStyle = "#000000";
+    ctx.font = "bold 32px sans-serif";
+    ctx.textAlign = "center";
     var scoreText = win ? r : "X";
-    var gridText = "";
-    
+    ctx.fillText("Wordle #" + todayData.num + " " + scoreText + "/6", width / 2, 55);
+
+    // Grid Specs
+    const tileSize = 66;
+    const tileSpacing = 8;
+    const startX = (width - (5 * tileSize + 4 * tileSpacing)) / 2;
+    const startY = 100;
+
     for (let i = 0; i < 6; i++) {
-        let rowStr = "";
         let isAnswerRow = (i === (r - 1) && win);
-        
         for (let j = 0; j < 5; j++) {
             let tile = document.getElementById("t" + i + j);
-            
-            if (!tile || tile.textContent.trim() === "") {
-                rowStr += "⬛"; 
-            } else if (isAnswerRow) {
-                // Adds a space after each bracket group so it spans the exact footprint of an emoji box
-                rowStr += "[" + tile.textContent.toUpperCase() + "] ";
-            } else {
+            let x = startX + j * (tileSize + tileSpacing);
+            let y = startY + i * (tileSize + tileSpacing);
+
+            let bgStyle = "#d3d6da"; 
+            let strokeStyle = null;
+            let letter = "";
+
+            if (tile && tile.textContent.trim() !== "") {
                 let status = tile.getAttribute("data-s");
-                if (status === "c") rowStr += "🟩";
-                else if (status === "p") rowStr += "🟨";
-                else rowStr += "⬛";
+                letter = tile.textContent.toUpperCase();
+
+                if (status === "c") bgStyle = "#6aaa64";
+                else if (status === "p") bgStyle = "#c9b458";
+                else bgStyle = "#787c7e";
+            } else {
+                // Empty bottom row outline match
+                bgStyle = "#e3e3e1";
+                strokeStyle = "#d3d6da";
+            }
+
+            // Fill Tile Base Color
+            ctx.fillStyle = bgStyle;
+            ctx.fillRect(x, y, tileSize, tileSize);
+
+            if (strokeStyle) {
+                ctx.strokeStyle = strokeStyle;
+                ctx.lineWidth = 3;
+                ctx.strokeRect(x + 1.5, y + 1.5, tileSize - 3, tileSize - 3);
+            }
+
+            // Text overlay generation solely on the winning answer row
+            if (isAnswerRow && letter !== "") {
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 34px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(letter, x + tileSize / 2, y + tileSize / 2 + 2);
             }
         }
-        // Trim trailing space from text rows so line endings stay perfectly crisp
-        if (isAnswerRow) {
-            rowStr = rowStr.trim();
-        }
-        gridText += rowStr + "\n";
     }
 
-    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + gridText;
-    navigator.clipboard.writeText(text).then(() => {
-        var btn = document.getElementById("share-answer-btn");
-        var originalText = btn.textContent;
-        btn.textContent = 'Answer Copied! 📋';
-        setTimeout(() => { btn.textContent = originalText; }, 2000);
-    });
+    // Convert canvas output stream directly to PNG Blob and write onto the device Clipboard
+    canvas.toBlob((blob) => {
+        const item = new ClipboardItem({ "image/png": blob });
+        navigator.clipboard.write([item]).then(() => {
+            var btn = document.getElementById("share-answer-btn");
+            var originalText = btn.textContent;
+            btn.textContent = 'Answer Image Copied! 📋';
+            setTimeout(() => { btn.textContent = originalText; }, 2000);
+        }).catch(err => {
+            console.error("Image copy fallback failure: ", err);
+        });
+    }, "image/png");
 }
 
 function admirePuzzle() {
