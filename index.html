@@ -125,7 +125,7 @@
     <div class="start-title">Wordle</div>
     <button id="start-play-btn" onclick="startGame()">Play</button>
     <div class="start-subtitle">Get 5 chances to guess a 6-letter word.</div>
-    <div class="start-date" id="start-date">July 16, 2026</div>
+    <div class="start-date" id="start-date">July 17, 2026</div>
     <div class="start-number" id="start-number">No. 1702</div>
 </div>
 
@@ -397,13 +397,12 @@ function ch() {
     }
 
     var currentGuess = g;
-    var currentRow = r; // Safely lock the current active row index layout context
+    var currentRow = r; 
 
     clearAnimations();
 
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
-            // FIXED: Reliably look up elements with local scope variables
             var tileNode = document.getElementById("t" + currentRow + i);
             if (tileNode) {
                 tileNode.classList.add("flip");
@@ -474,6 +473,7 @@ function showMsg(m) {
     }, 2000);
 }
 
+// Main share method from the Congratulations screen
 function sh() {
     var scoreText = win ? r : "X";
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
@@ -485,6 +485,7 @@ function sh() {
     });
 }
 
+// Custom share method from the Admire Puzzle context (now fixed to output standard green layout grid elements)
 function shareAnswer() {
     var scoreText = win ? r : "X";
     var gridText = "";
@@ -492,20 +493,15 @@ function shareAnswer() {
     for (let i = 0; i < 6; i++) {
         let rowStr = "";
         let hasLetters = false;
-        let isAnswerRow = (i === (r - 1) && win);
         
         for (let j = 0; j < 5; j++) {
             let tile = document.getElementById("t" + i + j);
             if (tile && tile.textContent !== "") {
                 hasLetters = true;
-                if (isAnswerRow) {
-                    rowStr += "[" + tile.textContent + "]";
-                } else {
-                    let status = tile.getAttribute("data-s");
-                    if (status === "c") rowStr += "🟩";
-                    else if (status === "p") rowStr += "🟨";
-                    else rowStr += "⬛";
-                }
+                let status = tile.getAttribute("data-s");
+                if (status === "c") rowStr += "🟩";
+                else if (status === "p") rowStr += "🟨";
+                else rowStr += "⬛";
             }
         }
         if (hasLetters) {
