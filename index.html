@@ -97,8 +97,8 @@
         #congrats-share-btn:hover { background-color: #4d8646; }
         .share-svg { width: 20px; height: 20px; fill: none; stroke: #ffffff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
-        #admire-puzzle-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
-        #admire-puzzle-btn:hover { background-color: #616466; }
+        #show-answer-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
+        #show-answer-btn:hover { background-color: #616466; }
 
         #share-answer-btn { display: none; background-color: #5c9e54; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 25px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
         #share-answer-btn:hover { background-color: #4d8646; }
@@ -157,7 +157,7 @@
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
     </button>
-    <button id="admire-puzzle-btn" onclick="admirePuzzle()">Admire Puzzle</button>
+    <button id="show-answer-btn" onclick="admirePuzzle()">Show Answer</button>
 </div>
 
 <div id="game-container">
@@ -485,7 +485,7 @@ function sh() {
     });
 }
 
-// Custom share method from the Admire Puzzle context (now fixed to output standard green layout grid elements)
+// Custom share method to strictly mirror the visual screen output "as-is"
 function shareAnswer() {
     var scoreText = win ? r : "X";
     var gridText = "";
@@ -493,15 +493,20 @@ function shareAnswer() {
     for (let i = 0; i < 6; i++) {
         let rowStr = "";
         let hasLetters = false;
+        let isAnswerRow = (i === (r - 1) && win);
         
         for (let j = 0; j < 5; j++) {
             let tile = document.getElementById("t" + i + j);
             if (tile && tile.textContent !== "") {
                 hasLetters = true;
-                let status = tile.getAttribute("data-s");
-                if (status === "c") rowStr += "🟩";
-                else if (status === "p") rowStr += "🟨";
-                else rowStr += "⬛";
+                if (isAnswerRow) {
+                    rowStr += "[" + tile.textContent + "]";
+                } else {
+                    let status = tile.getAttribute("data-s");
+                    if (status === "c") rowStr += "🟩";
+                    else if (status === "p") rowStr += "🟨";
+                    else rowStr += "⬛";
+                }
             }
         }
         if (hasLetters) {
