@@ -268,6 +268,11 @@ function updateCongratsEmojiDisplay() {
 }
 
 function clearAnimations() {
+    // Completely clear out animations by resetting the node elements to scrub lingering transitions
+    var oldBoard = document.getElementById("board");
+    var newBoard = oldBoard.cloneNode(true);
+    oldBoard.parentNode.replaceChild(newBoard, oldBoard);
+    
     const tiles = document.getElementsByClassName("tile");
     for (let i = 0; i < tiles.length; i++) {
         tiles[i].classList.remove("flip");
@@ -403,18 +408,19 @@ function ch() {
 
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
-            rowTiles[i].classList.add("flip");
-
-            setTimeout(() => {
-                if (rowEm[i] == "🟩") {
-                    rowTiles[i].setAttribute("data-s", "c");
-                } else if (rowEm[i] == "🟨") {
-                    rowTiles[i].setAttribute("data-s", "p");
-                } else {
-                    rowTiles[i].setAttribute("data-s", "a");
-                }
-            }, 375);
-
+            var tileNode = document.getElementById("t" + r + i);
+            if (tileNode) {
+                tileNode.classList.add("flip");
+                setTimeout(() => {
+                    if (rowEm[i] == "🟩") {
+                        tileNode.setAttribute("data-s", "c");
+                    } else if (rowEm[i] == "🟨") {
+                        tileNode.setAttribute("data-s", "p");
+                    } else {
+                        tileNode.setAttribute("data-s", "a");
+                    }
+                }, 375);
+            }
         }, i * 280); 
     }
 
@@ -431,7 +437,8 @@ function ch() {
 
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
-                    rowTiles[i].classList.add("bounce");
+                    var tileNode = document.getElementById("t" + (r - 1) + i);
+                    if (tileNode) tileNode.classList.add("bounce");
                 }, i * 250); 
             }
 
@@ -481,7 +488,6 @@ function sh() {
     });
 }
 
-// Copies the board as it looks on screen: emojis for guesses, letter blocks for the answer row
 function shareAnswer() {
     var scoreText = win ? r : "X";
     var gridText = "";
@@ -498,7 +504,6 @@ function shareAnswer() {
                 if (isAnswerRow) {
                     rowStr += "[" + tile.textContent + "]";
                 } else {
-                    // Pull the structural status attribute to resolve the accurate colored box block emoji
                     let status = tile.getAttribute("data-s");
                     if (status === "c") rowStr += "🟩";
                     else if (status === "p") rowStr += "🟨";
@@ -521,7 +526,7 @@ function shareAnswer() {
 }
 
 function admirePuzzle() {
-    clearAnimations(); // Prevent layout flash triggers
+    clearAnimations(); 
     applyPuzzleMasking();
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
