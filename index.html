@@ -487,40 +487,12 @@ function shareAnswer() {
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n";
     
     for (let i = 0; i < ems.length; i++) {
-        let isAnswerRow = (i === (r - 1) && win);
-        
-        if (isAnswerRow) {
-            let letterRow = "";
-            for (let j = 0; j < 5; j++) {
-                let tile = document.getElementById("t" + i + j);
-                let letter = tile ? tile.textContent.toUpperCase() : "";
-                letterRow += "[" + letter + "]";
-            }
-            text += letterRow + "\n";
-        } else {
-            let rowEmojis = Array.from(ems[i]); 
-            let maskRow = "";
-            for (let j = 0; j < 5; j++) {
-                if (rowEmojis[j] === "🟩") maskRow += "🟩";
-                else if (rowEmojis[j] === "🟨") maskRow += "🟨";
-                else maskRow += "⬛";
-            }
-            text += maskRow + "\n";
-        }
+        text += ems[i] + "\n";
+    }
+    for (let i = ems.length; i < 6; i++) {
+        text += "⬜⬜⬜⬜⬜\n";
     }
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-            triggerSuccessMessage('Copied! 📋');
-        }).catch(() => {
-            oldSchoolCopy(text);
-        });
-    } else {
-        oldSchoolCopy(text);
-    }
-}
-
-function fallbackToText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
             triggerSuccessMessage('Copied! 📋');
