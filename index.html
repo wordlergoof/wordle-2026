@@ -199,7 +199,6 @@ var ans = "";
 var todayData = {}; 
 var dateKey = "";    
 var hasSavedState = false;
-var cachedBoardHtml = "";
 
 async function initGame() {
     try {
@@ -214,6 +213,7 @@ async function initGame() {
 
         if (localStorage.getItem('wordle_played_date') === dateKey) {
             document.getElementById('start-page').style.display = 'none';
+            document.getElementById('game-container').style.display = 'none';
             document.getElementById('expired').style.display = 'block';
             return;
         }
@@ -226,12 +226,16 @@ async function initGame() {
         const savedStateRaw = localStorage.getItem('wordle_current_state_' + dateKey);
         if (savedStateRaw) {
             const state = JSON.parse(savedStateRaw);
-            r = state.r; c = state.c; g = state.g;
-            done = state.done; win = state.win;
-            greens = state.greens; yellows = state.yellows; ems = state.ems;
+            r = state.r;
+            c = state.c;
+            g = state.g;
+            done = state.done;
+            win = state.win;
+            greens = state.greens;
+            yellows = state.yellows;
+            ems = state.ems;
             
-            cachedBoardHtml = state.boardHtml;
-            document.getElementById("board").innerHTML = cachedBoardHtml;
+            document.getElementById("board").innerHTML = state.boardHtml;
             clearAnimations();
 
             if (done) {
@@ -251,8 +255,11 @@ async function initGame() {
                 hasSavedState = true;
             }
         }
+
     } catch (error) {
+        console.error("Error loading word list:", error);
         ans = todayData.word;
+        document.getElementById("puzNum").textContent = "WORDLE #" + todayData.num;
     }
 }
 
@@ -263,7 +270,8 @@ function updateCongratsEmojiDisplay() {
 function clearAnimations() {
     const tiles = document.getElementsByClassName("tile");
     for (let i = 0; i < tiles.length; i++) {
-        tiles[i].classList.remove("flip", "bounce");
+        tiles[i].classList.remove("flip");
+        tiles[i].classList.remove("bounce");
     }
 }
 
@@ -308,7 +316,26 @@ function resumeGame() {
 }
 
 function saveGameState() {
-    const state = { r, c, g, done, win, greens, yellows, ems, boardHtml: document.getElementById("board").innerHTML };
+    var boardClone = document.getElementById("board").cloneNode(true);
+    var savedTiles = boardClone.getElementsByClassName("tile");
+    for (let i = 0; i < savedTiles.length; i++) {
+        savedTiles[i].classList.remove("flip");
+        savedTiles[i].classList.remove("bounce");
+        savedTiles[i].classList.remove("masked-letter");
+        savedTiles[i].style.color = "";
+    }
+
+    const state = {
+        r: r,
+        c: c,
+        g: g,
+        done: done,
+        win: win,
+        greens: greens,
+        yellows: yellows,
+        ems: ems,
+        boardHtml: boardClone.innerHTML
+    };
     localStorage.setItem('wordle_current_state_' + dateKey, JSON.stringify(state));
 }
 
@@ -318,12 +345,14 @@ function pr(l) {
         if (g.length == 5) ch();
     } else if (l == "DEL") {
         if (c > 0) {
-            c--; g = g.slice(0, -1);
+            c--;
+            g = g.slice(0, -1);
             document.getElementById("t" + r + c).textContent = "";
         }
     } else if (g.length < 5 && l.length == 1) {
         document.getElementById("t" + r + c).textContent = l;
-        g += l; c++;
+        g += l;
+        c++;
     }
     saveGameState(); 
 }
@@ -331,82 +360,226 @@ function pr(l) {
 function ch() {
     if (document.getElementById("hm").checked) {
         for (var i = 0; i < 5; i++) {
-            if (greens[i] && g[i] != greens[i]) { showMsg(ords[i] + " Letter must be " + greens[i]); return; }
+            if (greens[i] && g[i] != greens[i]) {
+                showMsg(ords[i] + " Letter must be " + greens[i]);
+                return;
+            }
         }
         for (var j = 0; j < yellows.length; j++) {
-            if (g.indexOf(yellows[j]) == -1) { showMsg("Guess must contain " + yellows[j]); return; }
+            if (g.indexOf(yellows[j]) == -1) {
+                showMsg("Guess must contain " + yellows[j]);
+                return;
+            }
         }
     }
-    var rowTiles = [], chk = ans.split(""), rowEm = ["⬛","⬛","⬛","⬛","⬛"];
+    var rowTiles = [];
     for (var i = 0; i < 5; i++) {
-        if (g[i] == ans[i]) { greens[i] = g[i]; chk[i] = null; rowEm[i] = "🟩"; }
+        rowTiles.push(document.getElementById("t" + r + i));
+    }
+    var chk = ans.split("");
+    var rowEm = ["⬛","⬛","⬛","⬛","⬛"];
+    
+    for (var i = 0; i < 5; i++) {
+        if (g[i] == ans[i]) {
+            greens[i] = g[i];
+            chk[i] = null;
+            rowEm[i] = "🟩";
+        }
     }
     for (var i = 0; i < 5; i++) {
         if (rowEm[i] == "🟩") continue;
         var idx = chk.indexOf(g[i]);
-        if (idx != -1) { if (yellows.indexOf(g[i]) == -1) yellows.push(g[i]); chk[idx] = null; rowEm[i] = "🟨"; }
+        if (idx != -1) {
+            if (yellows.indexOf(g[i]) == -1) yellows.push(g[i]);
+            chk[idx] = null;
+            rowEm[i] = "🟨";
+        } else {
+            rowEm[i] = "⬛";
+        }
     }
-    var currentRow = r;
+
+    var currentGuess = g;
+    var currentRow = r; 
+
     clearAnimations();
+
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
             var tileNode = document.getElementById("t" + currentRow + i);
-            tileNode.classList.add("flip");
-            setTimeout(() => {
-                tileNode.setAttribute("data-s", rowEm[i] == "🟩" ? "c" : (rowEm[i] == "🟨" ? "p" : "a"));
-            }, 375);
+            if (tileNode) {
+                tileNode.classList.add("flip");
+                
+                setTimeout(() => {
+                    if (rowEm[i] == "🟩") {
+                        tileNode.setAttribute("data-s", "c");
+                    } else if (rowEm[i] == "🟨") {
+                        tileNode.setAttribute("data-s", "p");
+                    } else {
+                        tileNode.setAttribute("data-s", "a");
+                    }
+                }, 375);
+            }
         }, i * 280); 
     }
-    ems.push(rowEm.join("")); r++; 
+
+    ems.push(rowEm.join(""));
+    r++; 
+    
+    var swivelDuration = (4 * 280) + 750;
+
     setTimeout(() => {
-        if (g == ans) {
-            done = true; win = true; localStorage.setItem('wordle_played_date', dateKey);
-            for (let i = 0; i < 5; i++) { setTimeout(() => document.getElementById("t" + currentRow + i).classList.add("bounce"), i * 250); }
+        if (currentGuess == ans) {
+            done = true;
+            win = true;
+            localStorage.setItem('wordle_played_date', dateKey);
+
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    var tileNode = document.getElementById("t" + currentRow + i);
+                    if (tileNode) tileNode.classList.add("bounce");
+                }, i * 250); 
+            }
+
             setTimeout(() => {
+                clearAnimations();
                 updateCongratsEmojiDisplay();
                 document.getElementById('game-container').style.display = 'none';
                 document.getElementById('congrats-screen').style.display = 'flex';
                 saveGameState();
-            }, 2500);
-        } else if (r == 6) { done = true; win = false; localStorage.setItem('wordle_played_date', dateKey); document.getElementById("msg").textContent = ans; saveGameState(); }
-        else { saveGameState(); }
-    }, 2000);
-    c = 0; g = "";
+            }, (4 * 250) + 1200 + 1500); 
+
+        } else if (currentRow == 5) {
+            done = true;
+            win = false;
+            localStorage.setItem('wordle_played_date', dateKey);
+            document.getElementById("msg").textContent = ans;
+            saveGameState();
+        } else {
+            saveGameState();
+        }
+    }, swivelDuration);
+
+    c = 0;
+    g = "";
 }
 
 function showMsg(m) {
     const box = document.getElementById("msg");
-    box.textContent = m; box.style.color = "red";
-    setTimeout(() => { if (!done) { box.textContent = ""; box.style.color = "#6aaa64"; } }, 2000);
+    box.textContent = m;
+    box.style.color = "red";
+    setTimeout(() => {
+        if (!done) {
+            box.textContent = "";
+            box.style.color = "#6aaa64";
+        }
+    }, 2000);
 }
 
 function sh() {
-    var text = "Wordle #" + todayData.num + " " + (win ? (r) : "X") + "/6\n\n" + ems.join("\n");
-    navigator.clipboard.writeText(text);
+    var scoreText = win ? r : "X";
+    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
+    navigator.clipboard.writeText(text).then(() => {
+        var btn = document.getElementById("congrats-share-btn");
+        var originalHtml = btn.innerHTML;
+        btn.innerHTML = 'Copied Result! 📋';
+        setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
+    });
 }
 
 function shareAnswer() {
-    var text = "Wordle #" + todayData.num + " " + (win ? r : "X") + "/6\n\n" + ems.join("\n");
-    navigator.clipboard.writeText(text);
+    var scoreText = win ? r : "X";
+    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n";
+    
+    removePuzzleMasking();
+    
+    for (let row = 0; row < r; row++) {
+        for (let col = 0; col < 5; col++) {
+            text += document.getElementById("t" + row + col).textContent;
+        }
+        text += "\n";
+    }
+    text += "\n";
+    for (let i = 0; i < ems.length; i++) {
+        text += ems[i] + "\n";
+    }
+    for (let i = ems.length; i < 6; i++) {
+        text += "⬜⬜⬜⬜⬜\n";
+    }
+
+    applyPuzzleMasking();
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            triggerSuccessMessage('Copied! 📋');
+        }).catch(() => {
+            oldSchoolCopy(text);
+        });
+    } else {
+        oldSchoolCopy(text);
+    }
+}
+
+function oldSchoolCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed"; 
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        triggerSuccessMessage('Copied! 📋');
+    } catch (err) {
+        alert('Unable to copy results automatically.');
+    }
+    document.body.removeChild(textArea);
+}
+
+function triggerSuccessMessage(msgText) {
+    var btn = document.getElementById("share-answer-btn");
+    var originalText = btn.textContent;
+    btn.textContent = msgText;
+    setTimeout(() => { btn.textContent = originalText; }, 2000);
 }
 
 function admirePuzzle() {
+    var oldBoard = document.getElementById("board");
+    var newBoard = oldBoard.cloneNode(true);
+    oldBoard.parentNode.replaceChild(newBoard, oldBoard);
+
+    clearAnimations(); 
+    applyPuzzleMasking();
+    
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
-    document.getElementById('keys').style.display = 'none';
-    applyPuzzleMasking();
+    document.getElementById('keys').style.display = 'none'; 
+    document.getElementById('share-answer-btn').style.display = 'block'; 
+    document.getElementById('go-back-btn').style.display = 'block'; 
 }
 
 function revealEntirePuzzle() {
+    var oldBoard = document.getElementById("board");
+    var newBoard = oldBoard.cloneNode(true);
+    oldBoard.parentNode.replaceChild(newBoard, oldBoard);
+
+    clearAnimations(); 
+    removePuzzleMasking();
+    
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
-    document.getElementById('keys').style.display = 'none';
-    removePuzzleMasking();
+    document.getElementById('keys').style.display = 'none'; 
+    document.getElementById('share-answer-btn').style.display = 'block'; 
+    document.getElementById('go-back-btn').style.display = 'block'; 
 }
 
 function goBackToResults() {
+    clearAnimations();
+    removePuzzleMasking();
+    updateCongratsEmojiDisplay();
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('congrats-screen').style.display = 'flex';
+    document.getElementById('share-answer-btn').style.display = 'none'; 
+    document.getElementById('go-back-btn').style.display = 'none'; 
 }
 
 initGame();
