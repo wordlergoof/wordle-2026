@@ -36,7 +36,6 @@
         .key { background: #d3d6da; color: #000000; flex: 1; min-width: 0; height: 55px; margin: 1.5px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; display: flex; justify-content: center; align-items: center; -webkit-tap-highlight-color: transparent; user-select: none; }
         .wide { flex: 1.5; font-size: 0.6rem; }
         
-        /* Updated CSS for White Text on Green Tiles */
         [data-s="c"] { background: #6aaa64 !important; border-color: #6aaa64 !important; color: #ffffff !important; }
         [data-s="p"] { background: #c9b458 !important; border-color: #c9b458 !important; color: #ffffff !important; }
         [data-s="a"] { background: #787c7e !important; border-color: #787c7e !important; color: #ffffff !important; }
@@ -98,8 +97,8 @@
         #congrats-share-btn:hover { background-color: #4d8646; }
         .share-svg { width: 20px; height: 20px; fill: none; stroke: #ffffff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
-        #show-answer-btn, #show-puzzle-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; width: 200px; text-align: center; }
-        #show-answer-btn:hover, #show-puzzle-btn:hover { background-color: #616466; }
+        #show-puzzle-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; width: 200px; text-align: center; }
+        #show-puzzle-btn:hover { background-color: #616466; }
 
         #share-answer-btn { display: none; background-color: #5c9e54; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 25px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
         #share-answer-btn:hover { background-color: #4d8646; }
@@ -158,7 +157,6 @@
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
     </button>
-    <button id="show-answer-btn" onclick="admirePuzzle()">Show Answer</button>
     <button id="show-puzzle-btn" onclick="revealEntirePuzzle()">Show Puzzle</button>
 </div>
 
@@ -179,7 +177,6 @@
         <div class="row" id="r5"><div class="tile" id="t50"></div><div class="tile" id="t51"></div><div class="tile" id="t52"></div><div class="tile" id="t53"></div><div class="tile" id="t54"></div></div>
     </div>
 
-    <button id="share-answer-btn" onclick="shareAnswer()">Share Answer</button>
     <button id="go-back-btn" onclick="goBackToResults()">Go Back</button>
 
     <div id="keys" style="margin-top:10px; width: 100%;">
@@ -245,7 +242,6 @@ async function initGame() {
                     updateCongratsEmojiDisplay();
                     document.getElementById('game-container').style.display = 'flex';
                     document.getElementById('keys').style.display = 'none'; 
-                    document.getElementById('share-answer-btn').style.display = 'block';
                     document.getElementById('go-back-btn').style.display = 'block';
                     applyPuzzleMasking();
                 } else {
@@ -487,66 +483,6 @@ function sh() {
     });
 }
 
-function shareAnswer() {
-    var scoreText = win ? r : "X";
-    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n";
-    
-    for (let i = 0; i < ems.length; i++) {
-        text += ems[i] + "\n";
-    }
-    for (let i = ems.length; i < 6; i++) {
-        text += "⬜⬜⬜⬜⬜\n";
-    }
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-            triggerSuccessMessage('Copied! 📋');
-        }).catch(() => {
-            oldSchoolCopy(text);
-        });
-    } else {
-        oldSchoolCopy(text);
-    }
-}
-
-function oldSchoolCopy(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed"; 
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-        document.execCommand('copy');
-        triggerSuccessMessage('Copied! 📋');
-    } catch (err) {
-        alert('Unable to copy results automatically.');
-    }
-    document.body.removeChild(textArea);
-}
-
-function triggerSuccessMessage(msgText) {
-    var btn = document.getElementById("share-answer-btn");
-    var originalText = btn.textContent;
-    btn.textContent = msgText;
-    setTimeout(() => { btn.textContent = originalText; }, 2000);
-}
-
-function admirePuzzle() {
-    var oldBoard = document.getElementById("board");
-    var newBoard = oldBoard.cloneNode(true);
-    oldBoard.parentNode.replaceChild(newBoard, oldBoard);
-
-    clearAnimations(); 
-    applyPuzzleMasking();
-    
-    document.getElementById('congrats-screen').style.display = 'none';
-    document.getElementById('game-container').style.display = 'flex';
-    document.getElementById('keys').style.display = 'none'; 
-    document.getElementById('share-answer-btn').style.display = 'block'; 
-    document.getElementById('go-back-btn').style.display = 'block'; 
-}
-
 function revealEntirePuzzle() {
     var oldBoard = document.getElementById("board");
     var newBoard = oldBoard.cloneNode(true);
@@ -558,17 +494,15 @@ function revealEntirePuzzle() {
     document.getElementById('congrats-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'flex';
     document.getElementById('keys').style.display = 'none'; 
-    document.getElementById('share-answer-btn').style.display = 'block'; 
     document.getElementById('go-back-btn').style.display = 'block'; 
 }
 
 function goBackToResults() {
     clearAnimations();
-    removePuzzleMasking();
+    applyPuzzleMasking();
     updateCongratsEmojiDisplay();
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('congrats-screen').style.display = 'flex';
-    document.getElementById('share-answer-btn').style.display = 'none'; 
     document.getElementById('go-back-btn').style.display = 'none'; 
 }
 
