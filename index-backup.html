@@ -35,6 +35,8 @@
         .kb-row { display: flex; justify-content: center; width: 100%; margin: 3px 0; padding: 0 2px; touch-action: manipulation; }
         .key { background: #d3d6da; color: #000000; flex: 1; min-width: 0; height: 55px; margin: 1.5px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; display: flex; justify-content: center; align-items: center; -webkit-tap-highlight-color: transparent; user-select: none; }
         .wide { flex: 1.5; font-size: 0.6rem; }
+        
+        /* Updated CSS for White Text on Green Tiles */
         [data-s="c"] { background: #6aaa64 !important; border-color: #6aaa64 !important; color: #ffffff !important; }
         [data-s="p"] { background: #c9b458 !important; border-color: #c9b458 !important; color: #ffffff !important; }
         [data-s="a"] { background: #787c7e !important; border-color: #787c7e !important; color: #ffffff !important; }
@@ -275,15 +277,16 @@ function clearAnimations() {
 }
 
 function applyPuzzleMasking() {
+    let winningRowIdx = win ? (r - 1) : -1;
     for (let rowIdx = 0; rowIdx < 6; rowIdx++) {
-        let isAnswerRow = (rowIdx === (r - 1) && win);
         for (let colIdx = 0; colIdx < 5; colIdx++) {
             let tile = document.getElementById("t" + rowIdx + colIdx);
             if (tile && tile.textContent !== "") {
-                if (!isAnswerRow) {
-                    tile.classList.add("masked-letter");
-                } else {
+                if (rowIdx === winningRowIdx) {
                     tile.classList.remove("masked-letter");
+                    tile.style.color = "#ffffff";
+                } else {
+                    tile.classList.add("masked-letter");
                 }
             }
         }
@@ -294,6 +297,7 @@ function removePuzzleMasking() {
     const tiles = document.getElementsByClassName("tile");
     for (let i = 0; i < tiles.length; i++) {
         tiles[i].classList.remove("masked-letter");
+        tiles[i].style.color = "";
     }
 }
 
@@ -319,6 +323,7 @@ function saveGameState() {
         savedTiles[i].classList.remove("flip");
         savedTiles[i].classList.remove("bounce");
         savedTiles[i].classList.remove("masked-letter");
+        savedTiles[i].style.color = "";
     }
 
     const state = {
@@ -487,40 +492,12 @@ function shareAnswer() {
     var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n";
     
     for (let i = 0; i < ems.length; i++) {
-        let isAnswerRow = (i === (r - 1) && win);
-        
-        if (isAnswerRow) {
-            let letterRow = "";
-            for (let j = 0; j < 5; j++) {
-                let tile = document.getElementById("t" + i + j);
-                let letter = tile ? tile.textContent.toUpperCase() : "";
-                letterRow += "[" + letter + "]";
-            }
-            text += letterRow + "\n";
-        } else {
-            let rowEmojis = Array.from(ems[i]); 
-            let maskRow = "";
-            for (let j = 0; j < 5; j++) {
-                if (rowEmojis[j] === "🟩") maskRow += "🟩";
-                else if (rowEmojis[j] === "🟨") maskRow += "🟨";
-                else maskRow += "⬛";
-            }
-            text += maskRow + "\n";
-        }
+        text += ems[i] + "\n";
+    }
+    for (let i = ems.length; i < 6; i++) {
+        text += "⬜⬜⬜⬜⬜\n";
     }
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-            triggerSuccessMessage('Copied! 📋');
-        }).catch(() => {
-            oldSchoolCopy(text);
-        });
-    } else {
-        oldSchoolCopy(text);
-    }
-}
-
-function fallbackToText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
             triggerSuccessMessage('Copied! 📋');
