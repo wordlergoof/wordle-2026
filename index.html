@@ -8,38 +8,16 @@
         * { box-sizing: border-box; }
         body { background: #e3e3e1; color: #000000; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 5px; overflow-x: hidden; width: 100vw; -webkit-text-size-adjust: 100%; min-height: 100vh; }
         header { font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #d3d6da; width: 100%; text-align: center; padding: 5px 0; margin-bottom: 5px; }
-        
         #game-container { display: none; width: 100%; max-width: 375px; flex-direction: column; align-items: center; }
-        
-        .tile { 
-            width: 40px; 
-            height: 40px; 
-            border: 2px solid #d3d6da; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-size: 1.3rem; 
-            font-weight: bold; 
-            margin: 2px; 
-            text-transform: uppercase; 
-            color: #000000;
-            transform-style: preserve-3d;
-            backface-visibility: list-item;
-        }
-        
-        .tile.masked-letter {
-            color: transparent !important;
-        }
-        
+        .tile { width: 40px; height: 40px; border: 2px solid #d3d6da; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; font-weight: bold; margin: 2px; text-transform: uppercase; color: #000000; transform-style: preserve-3d; backface-visibility: hidden; }
+        .tile.masked-letter { color: transparent !important; }
         .row { display: flex; justify-content: center; width: 100%; }
         .kb-row { display: flex; justify-content: center; width: 100%; margin: 3px 0; padding: 0 2px; touch-action: manipulation; }
         .key { background: #d3d6da; color: #000000; flex: 1; min-width: 0; height: 55px; margin: 1.5px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; display: flex; justify-content: center; align-items: center; -webkit-tap-highlight-color: transparent; user-select: none; }
         .wide { flex: 1.5; font-size: 0.6rem; }
-        
         [data-s="c"] { background: #6aaa64 !important; border-color: #6aaa64 !important; color: #ffffff !important; }
         [data-s="p"] { background: #c9b458 !important; border-color: #c9b458 !important; color: #ffffff !important; }
         [data-s="a"] { background: #787c7e !important; border-color: #787c7e !important; color: #ffffff !important; }
-        
         .controls { margin-bottom: 5px; display: flex; justify-content: center; align-items: center; gap: 10px; color: #787c7e; font-weight: bold; font-size: 0.7rem; width: 100%; }
         .switch { position: relative; width: 34px; height: 18px; display: inline-block; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -49,23 +27,10 @@
         input:checked + .slider:before { transform: translateX(16px); }
         #msg { height: 25px; font-weight: bold; color: #6aaa64; text-align: center; font-size: 0.8rem; margin-bottom: 5px; }
         #expired { display: none; text-align: center; margin-top: 50px; font-weight: bold; color: #787c7e; width: 100%; padding: 20px; }
-        
         .flip { animation: flipTile 0.75s ease-in-out forwards; }
-        @keyframes flipTile {
-            0% { transform: rotateX(0deg); }
-            45% { transform: rotateX(90deg); } 
-            100% { transform: rotateX(0deg); }
-        }
-
+        @keyframes flipTile { 0% { transform: rotateX(0deg); } 45% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
         .bounce { animation: bounceTile 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards; }
-        @keyframes bounceTile {
-            0% { transform: translateY(0); }
-            40% { transform: translateY(-12px); }
-            70% { transform: translateY(2px); }
-            85% { transform: translateY(-1px); }
-            100% { transform: translateY(0); }
-        }
-
+        @keyframes bounceTile { 0% { transform: translateY(0); } 40% { transform: translateY(-12px); } 70% { transform: translateY(2px); } 85% { transform: translateY(-1px); } 100% { transform: translateY(0); } }
         #start-page { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; max-width: 500px; padding: 40px 20px; margin-top: auto; margin-bottom: auto; min-height: 80vh; }
         .start-logo { margin-bottom: 15px; }
         .start-title { font-family: Georgia, serif; font-size: 3rem; font-weight: bold; color: #000000; margin-bottom: 15px; letter-spacing: -0.5px; }
@@ -74,35 +39,24 @@
         .start-subtitle { font-family: Georgia, serif; font-size: 1.6rem; line-height: 1.3; color: #000000; max-width: 320px; margin-bottom: 40px; }
         .start-date { font-size: 0.95rem; font-weight: bold; color: #000000; margin-bottom: 5px; }
         .start-number { font-size: 0.9rem; color: #333333; }
-
         #welcome-back { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 400px; text-align: center; padding: 40px 20px; font-family: Georgia, serif; margin-top: 40px; }
         #welcome-back h1 { font-size: 2.5rem; font-weight: 800; margin: 20px 0 10px 0; color: #000000; }
         #welcome-back p { font-size: 1.4rem; color: #000000; margin-bottom: 30px; font-family: sans-serif; }
         #welcome-back button { background-color: #121213; color: #ffffff; border: none; padding: 14px 40px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; transition: background-color 0.2s; }
         #welcome-back button:hover { background-color: #2f2f31; }
-        
         .mini-grid-icon { display: grid; grid-template-columns: repeat(3, 16px); gap: 2px; margin-bottom: 10px; }
         .mini-tile { width: 16px; height: 16px; border: 1.5px solid #121213; }
         .mini-tile.green { background-color: #6aaa64; border-color: #6aaa64; }
-
         #congrats-screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 375px; text-align: center; padding: 40px 20px; margin-top: 50px; }
         #congrats-screen h1 { font-family: Arial, sans-serif; font-size: 2.3rem; font-weight: 800; margin: 15px 0 25px 0; color: #000000; letter-spacing: -0.5px; }
-        
         #congrats-emoji-display { font-size: 1.4rem; line-height: 1.5; letter-spacing: 2px; margin-bottom: 35px; white-space: pre; font-family: monospace; }
-        
         .star-container { width: 58px; height: 58px; background-color: #81b16c; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
         .star-icon { width: 32px; height: 32px; background-color: #ffffff; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
-
         #congrats-share-btn { background-color: #5c9e54; color: #ffffff; border: none; padding: 13px 35px; font-size: 1.2rem; font-weight: bold; border-radius: 30px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
         #congrats-share-btn:hover { background-color: #4d8646; }
         .share-svg { width: 20px; height: 20px; fill: none; stroke: #ffffff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-
         #show-puzzle-btn { background-color: #787c7e; color: #ffffff; border: none; padding: 11px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px; cursor: pointer; margin-top: 15px; font-family: sans-serif; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; width: 200px; text-align: center; }
         #show-puzzle-btn:hover { background-color: #616466; }
-
-        #share-answer-btn { display: none; background-color: #5c9e54; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 25px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
-        #share-answer-btn:hover { background-color: #4d8646; }
-        
         #go-back-btn { display: none; background-color: #121213; color: #ffffff; border: none; padding: 12px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; font-family: sans-serif; margin-top: 12px; transition: background-color 0.15s; -webkit-tap-highlight-color: transparent; }
         #go-back-btn:hover { background-color: #2f2f31; }
     </style>
@@ -144,9 +98,7 @@
 <div id="congrats-screen">
     <div class="star-container"><div class="star-icon"></div></div>
     <h1>Congratulations!</h1>
-    
     <div id="congrats-emoji-display"></div>
-    
     <button id="congrats-share-btn" onclick="sh()">
         Share Results 
         <svg class="share-svg" viewBox="0 0 24 24">
@@ -167,7 +119,6 @@
         <label class="switch"><input type="checkbox" id="hm"><span class="slider"></span></label>
     </div>
     <div id="msg"></div>
-    
     <div id="board">
         <div class="row" id="r0"><div class="tile" id="t00"></div><div class="tile" id="t01"></div><div class="tile" id="t02"></div><div class="tile" id="t03"></div><div class="tile" id="t04"></div></div>
         <div class="row" id="r1"><div class="tile" id="t10"></div><div class="tile" id="t11"></div><div class="tile" id="t12"></div><div class="tile" id="t13"></div><div class="tile" id="t14"></div></div>
@@ -176,9 +127,7 @@
         <div class="row" id="r4"><div class="tile" id="t40"></div><div class="tile" id="t41"></div><div class="tile" id="t42"></div><div class="tile" id="t43"></div><div class="tile" id="t44"></div></div>
         <div class="row" id="r5"><div class="tile" id="t50"></div><div class="tile" id="t51"></div><div class="tile" id="t52"></div><div class="tile" id="t53"></div><div class="tile" id="t54"></div></div>
     </div>
-
     <button id="go-back-btn" onclick="goBackToResults()">Go Back</button>
-
     <div id="keys" style="margin-top:10px; width: 100%;">
         <div class="kb-row"><div class="key" onclick="pr('Q')">Q</div><div class="key" onclick="pr('W')">W</div><div class="key" onclick="pr('E')">E</div><div class="key" onclick="pr('R')">R</div><div class="key" onclick="pr('T')">T</div><div class="key" onclick="pr('Y')">Y</div><div class="key" onclick="pr('U')">U</div><div class="key" onclick="pr('I')">I</div><div class="key" onclick="pr('O')">O</div><div class="key" onclick="pr('P')">P</div></div>
         <div class="kb-row"><div class="key" onclick="pr('A')">A</div><div class="key" onclick="pr('S')">S</div><div class="key" onclick="pr('D')">D</div><div class="key" onclick="pr('F')">F</div><div class="key" onclick="pr('G')">G</div><div class="key" onclick="pr('H')">H</div><div class="key" onclick="pr('J')">J</div><div class="key" onclick="pr('K')">K</div><div class="key" onclick="pr('L')">L</div></div>
@@ -194,8 +143,8 @@ var yellows = [];
 var ems = [];
 const ords = ["1st", "2nd", "3rd", "4th", "5th"];
 var ans = "";      
-var todayData = {}; 
-var dateKey = "";   
+var todayData = {};   
+var dateKey = "";    
 var hasSavedState = false;
 
 async function initGame() {
@@ -474,7 +423,8 @@ function showMsg(m) {
 
 function sh() {
     var scoreText = win ? r : "X";
-    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n");
+    // Fixed: Appending the answer to the share text
+    var text = "Wordle #" + todayData.num + " " + scoreText + "/6\n\n" + ems.join("\n") + "\n\nAnswer: " + ans;
     navigator.clipboard.writeText(text).then(() => {
         var btn = document.getElementById("congrats-share-btn");
         var originalHtml = btn.innerHTML;
